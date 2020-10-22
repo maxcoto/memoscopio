@@ -53,7 +53,10 @@ public class BubbleView extends View {
     }
 
     protected void move(float f, float g) {
-        if(x < maxLeft || x > maxRight || y < maxTop || y > maxBottom) return;
+        if(x < maxLeft && f < 0) return;
+        if(x > maxRight && f > 0) return;
+        if(y < maxTop && g < 0) return;
+        if(y > maxBottom && g > 0) return;
 
         x = (int) (x + f);
         y = (int) (y + g);
