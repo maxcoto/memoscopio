@@ -29,7 +29,7 @@
         app:layout_constraintStart_toStartOf="parent" />
 
     <com.google.android.material.textfield.TextInputEditText
-        android:id="@+id/editText"
+        android:id="@+id/apellidoInput"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="20dp"
@@ -87,8 +87,8 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="20dp"
         android:hint="@string/nombreHint"
-        app:layout_constraintBottom_toTopOf="@+id/editText"
-        app:layout_constraintEnd_toEndOf="@+id/editText"
-        app:layout_constraintStart_toStartOf="@+id/editText" />
+        app:layout_constraintBottom_toTopOf="@+id/apellidoInput"
+        app:layout_constraintEnd_toEndOf="@+id/apellidoInput"
+        app:layout_constraintStart_toStartOf="@+id/apellidoInput" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
