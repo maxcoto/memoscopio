@@ -120,4 +120,5 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
         sensorManager.unregisterListener(this, sensorManager.getDefaultSensor(Sensor.TYPE_PROXIMITY));
         sensorManager.unregisterListener(this, sensorManager.getDefaultSensor(Sensor.TYPE_PRESSURE));
     }
+
 }
