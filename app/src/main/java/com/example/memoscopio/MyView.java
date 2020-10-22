@@ -11,13 +11,11 @@ import android.view.View;
 public class MyView extends View
 {
 
-    private int x = 150;
-    private int y = 150;
-    private int r = 50;
+    private int x;
+    private int y;
+    private int r = 100;
     private Paint paint;
     private Canvas grid;
-
-    private boolean grafica = true;
 
     public MyView(Context context, int width, int height)
     {
