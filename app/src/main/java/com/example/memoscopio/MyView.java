@@ -5,6 +5,7 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.util.DisplayMetrics;
 import android.view.View;
 
 public class MyView extends View
@@ -18,9 +19,12 @@ public class MyView extends View
 
     private boolean grafica = true;
 
-    public MyView(Context context)
+    public MyView(Context context, int width, int height)
     {
         super(context);
+
+        x = width/2;
+        y = height/2;
 
         paint = new Paint();
         paint.setStyle(Paint.Style.FILL);
