@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">memoscopio</string>
+    <string name="nombreHint">Nombre</string>
+    <string name="loginHint">Login</string>
+    <string name="registrarmeHint">Registrarme</string>
+    <string name="comisionHint">Comision</string>
+    <string name="passwordHint">Password</string>
+    <string name="emailHint">Email</string>
+    <string name="dniHint">DNI</string>
+    <string name="apellidoHint">Apellido</string>
+    <string name="_0Hint">0%</string>
+    <string name="bateriaHint">Bateria</string>
+    <string name="continuarHint">Continuar</string>
+</resources>
