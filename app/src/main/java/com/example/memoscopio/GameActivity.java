@@ -62,7 +62,7 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
                     txt += "x: " + event.values[0] + "\n";
                     txt += "y: " + event.values[1] + "\n";
                     txt += "z: " + event.values[2] + "\n";
-                    giroscopio.setText("goalsd");
+                    giroscopio.setText(txt);
                     break;
                 case Sensor.TYPE_PROXIMITY:
                     txt += "proximidad:\n";
