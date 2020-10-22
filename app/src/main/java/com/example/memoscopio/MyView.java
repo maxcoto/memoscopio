@@ -30,9 +30,7 @@ public class MyView extends View
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
 
-        if (grafica) {
-            canvas.drawCircle(x, y, r, paint);
-            grafica = false;
-        }
+        canvas.drawCircle(x, y, r, paint);
+        invalidate();
     }
 }
