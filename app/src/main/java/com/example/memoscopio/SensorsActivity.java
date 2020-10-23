@@ -19,7 +19,6 @@ public class SensorsActivity extends AppCompatActivity implements SensorEventLis
     private TextView giroscopio;
     private TextView proximidad;
     private TextView detecta;
-    private TextView presion;
 
 
     @Override
@@ -33,7 +32,6 @@ public class SensorsActivity extends AppCompatActivity implements SensorEventLis
         giroscopio = findViewById(R.id.giroscopio);
         proximidad = findViewById(R.id.proximidad);
         detecta = findViewById(R.id.detecta);
-        presion = findViewById(R.id.presion);
     }
 
     @Override
@@ -74,11 +72,6 @@ public class SensorsActivity extends AppCompatActivity implements SensorEventLis
                     } else {
                         detecta.setText("-");
                     }
-                    break;
-                case Sensor.TYPE_PRESSURE:
-                    txt += "presion:\n";
-                    txt += event.values[0] + "\n";
-                    presion.setText(txt);
                     break;
             }
         }
