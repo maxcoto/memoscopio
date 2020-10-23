@@ -26,7 +26,6 @@ public class BatteryActivity extends AppCompatActivity {
 
         int level = batteryStatus.getIntExtra(BatteryManager.EXTRA_LEVEL, -1);
         int scale = batteryStatus.getIntExtra(BatteryManager.EXTRA_SCALE, -1);
-
         int batteryPct = (int) (level * 100 / (float) scale);
 
         batteryLabel = findViewById(R.id.batteryLabel);

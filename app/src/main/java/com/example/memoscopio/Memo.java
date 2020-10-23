@@ -26,8 +26,8 @@ public class Memo {
 
     }
 
-    public void draw(Canvas canvas, boolean starting){
-        if(starting || found){
+    public void draw(Canvas canvas, boolean show){
+        if(show || found){
             bubble.draw(canvas);
         }
     }

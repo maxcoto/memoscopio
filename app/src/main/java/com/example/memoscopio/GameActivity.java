@@ -39,11 +39,7 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
                     gameView.move(event.values[0], event.values[1]);
                     break;
                 case Sensor.TYPE_PROXIMITY:
-                    if(event.values[0] == 0){
-                        gameView.help(true);
-                    } else {
-                        gameView.help(false);
-                    }
+                    gameView.help(event.values[0] == 0);
                     break;
             }
         }

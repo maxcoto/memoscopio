@@ -10,21 +10,28 @@ import android.view.View;
 
 public class GameView extends View {
 
+    private enum State {
+        STARTING,
+        PLAYING,
+        PAUSED,
+        FINISHED
+    }
+
+    private State state = State.STARTING;
+
     private final int diameter = 200;
-
-    private boolean starting = true;
-    private boolean helping = false;
-    private boolean finished = false;
-
     private Bubble bubble;
     private Memo memo1;
     private Memo memo2;
 
     private Paint paint;
     private Context context;
-    private long time;
 
-    String message = "5";
+    private long time;
+    private int penalty = 0;
+    private String message1 = "5";
+    private String message2 = "";
+    private String message3 = "";
 
     public GameView(Context context, int width, int height) {
         super(context);
@@ -39,13 +46,13 @@ public class GameView extends View {
 
         new CountDownTimer(5000, 1000) {
             public void onTick(long millisUntilFinished) {
-                message = "" + (millisUntilFinished / 1000);
+                message1 = "" + (millisUntilFinished / 1000);
                 invalidate();
             }
             public void onFinish() {
-                message = "";
+                message1 = "";
                 time = System.currentTimeMillis();
-                starting = false;
+                state = State.PLAYING;
             }
         }.start();
 
@@ -58,21 +65,37 @@ public class GameView extends View {
         super.onDraw(canvas);
         bubble.draw(canvas);
 
-        memo1.draw(canvas, starting);
-        memo2.draw(canvas, starting);
+        boolean showMemos = state != State.PLAYING;
+        memo1.draw(canvas, showMemos);
+        memo2.draw(canvas, showMemos);
 
-        canvas.drawText(message, 20, 70, paint);
+        canvas.drawText(message1, 20, 080, paint);
+        canvas.drawText(message2, 20, 150, paint);
+        canvas.drawText(message3, 20, 230, paint);
     }
 
     protected void move(float f, float g) {
-        if(starting) return;
-        this.check();
-        bubble.move(f, g);
-        invalidate();
+        if(state == State.PLAYING) {
+            this.check();
+            bubble.move(f, g);
+            invalidate();
+        }
+        if(state == State.PAUSED){
+            invalidate();
+        }
     }
 
-    protected void help(boolean stop) {
-        //starting = stop;
+    protected void help(boolean pause) {
+        if(pause){
+            if(state == State.PLAYING){
+                state = State.PAUSED;
+                penalty += 10;
+            }
+        } else {
+            if(state == State.PAUSED){
+                state = State.PLAYING;
+            }
+        }
     }
 
     private void check(){
@@ -86,11 +109,16 @@ public class GameView extends View {
     }
 
     private void finish(){
-        this.starting = true;
+        state = State.FINISHED;
 
-        long elapsed = System.currentTimeMillis() - time;
-        String result = String.format("%.3f", (elapsed/1000));
-        message = "Muy bien! Tu tiempo fue: " + result + "s";
+        double elapsed = ((System.currentTimeMillis() - time)/1000.0) + penalty;
+        String elapsedString = String.format("%.3f", elapsed);
+        String penaltyString = String.format("%d", penalty);
+
+        message1 = "Muy bien, los encontraste!";
+        message2 = "Tu tiempo fue: " + elapsedString + "s\n" ;
+        message3 += "Penalidad: " + penaltyString + "s";
+
         invalidate();
 
         new CountDownTimer(5000, 1000) {
