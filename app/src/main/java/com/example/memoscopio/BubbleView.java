@@ -9,6 +9,7 @@ import android.graphics.Point;
 import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.shapes.OvalShape;
 import android.graphics.drawable.shapes.RectShape;
+import android.os.CountDownTimer;
 import android.util.DisplayMetrics;
 import android.view.Display;
 import android.view.View;
@@ -32,10 +33,17 @@ public class BubbleView extends View {
     private int maxBottom;
 
     private boolean starting = true;
+    private boolean found = false;
 
     private ShapeDrawable bubble;
 
+    private ShapeDrawable memo;
+
     private ArrayList<ShapeDrawable> rects;
+
+    private Paint paint;
+
+    String secondsRemaining = "5";
 
     public BubbleView(Context context, int width, int height)
     {
@@ -54,15 +62,41 @@ public class BubbleView extends View {
         bubble = new ShapeDrawable(new OvalShape());
         bubble.setBounds(x, y, x + diameter, y + diameter);
         bubble.getPaint().setColor(Color.BLUE);
+
+        int offset = 200;
+        memo = new ShapeDrawable(new OvalShape());
+        memo.setBounds(x-offset, y-offset, x + diameter - offset, y + diameter - offset);
+        memo.getPaint().setColor(Color.YELLOW);
+
+
+        new CountDownTimer(5000, 1000) {
+            public void onTick(long millisUntilFinished) {
+                secondsRemaining = "" + (millisUntilFinished / 1000);
+                invalidate();
+            }
+            public void onFinish() {
+                secondsRemaining = "";
+                starting = false;
+            }
+        }.start();
+
+
+        paint = new Paint();
+        paint.setTextSize(100);
     }
 
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
         bubble.draw(canvas);
+        if(found || starting) {
+            memo.draw(canvas);
+        }
+
+        canvas.drawText(secondsRemaining, 10, 50, paint);
     }
 
     protected void move(float f, float g) {
-        //if(starting) return;
+        if(starting) return;
         if(x < maxLeft && f > 0) return;
         if(x > maxRight && f < 0) return;
         if(y < maxTop && g < 0) return;
