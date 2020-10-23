@@ -69,7 +69,7 @@ public class GameView extends View {
         memo1.draw(canvas, showMemos);
         memo2.draw(canvas, showMemos);
 
-        canvas.drawText(message1, 20, 080, paint);
+        canvas.drawText(message1, 20, 80, paint);
         canvas.drawText(message2, 20, 150, paint);
         canvas.drawText(message3, 20, 230, paint);
     }
@@ -78,11 +78,8 @@ public class GameView extends View {
         if(state == State.PLAYING) {
             this.check();
             bubble.move(f, g);
-            invalidate();
         }
-        if(state == State.PAUSED){
-            invalidate();
-        }
+        invalidate();
     }
 
     protected void help(boolean pause) {
@@ -118,8 +115,6 @@ public class GameView extends View {
         message1 = "Muy bien, los encontraste!";
         message2 = "Tu tiempo fue: " + elapsedString + "s\n" ;
         message3 += "Penalidad: " + penaltyString + "s";
-
-        invalidate();
 
         new CountDownTimer(5000, 1000) {
             public void onTick(long millisUntilFinished) {};
