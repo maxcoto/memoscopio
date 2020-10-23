@@ -36,10 +36,8 @@ public class BubbleView extends View {
 
     private ShapeDrawable bubble;
 
-    private ShapeDrawable memo1;
-    private ShapeDrawable memo2;
-    private boolean found1 = false;
-    private boolean found2 = false;
+    private Memo memo1;
+    private Memo memo2;
 
     private ArrayList<ShapeDrawable> rects;
 
@@ -65,19 +63,8 @@ public class BubbleView extends View {
         bubble.setBounds(x, y, x + diameter, y + diameter);
         bubble.getPaint().setColor(Color.BLUE);
 
-
-        int offsetX = new Random().nextInt(x * 2 + 1) - x;
-        int offsetY = new Random().nextInt(y * 2 + 1) - y;
-        memo1 = new ShapeDrawable(new OvalShape());
-        memo1.setBounds(x  + offsetX, y + offsetY, x + diameter + offsetX, y + diameter + offsetY);
-        memo1.getPaint().setColor(Color.YELLOW);
-
-        offsetX = new Random().nextInt(x * 2 + 1) - x;
-        offsetY = new Random().nextInt(y * 2 + 1) - y;
-        memo2 = new ShapeDrawable(new OvalShape());
-        memo2.setBounds(x + offsetX, y + offsetY, x + diameter + offsetX, y + diameter + offsetY);
-        memo2.getPaint().setColor(Color.YELLOW);
-
+        memo1 = new Memo(x, y);
+        memo2 = new Memo(x, y);
 
         new CountDownTimer(5000, 1000) {
             public void onTick(long millisUntilFinished) {
@@ -99,17 +86,16 @@ public class BubbleView extends View {
         super.onDraw(canvas);
         bubble.draw(canvas);
         if(starting) {
-            memo1.draw(canvas);
-            memo2.draw(canvas);
+            memo1.bubble.draw(canvas);
+            memo2.bubble.draw(canvas);
         } else {
-            if(found1){
-                memo1.draw(canvas);
+            if(memo1.found){
+                memo1.bubble.draw(canvas);
             }
-            if(found2) {
-                memo2.draw(canvas);
+            if(memo1.found) {
+                memo2.bubble.draw(canvas);
             }
         }
-
 
         canvas.drawText(secondsRemaining, 10, 100, paint);
         canvas.drawText(distance, 10, 200, paint);
@@ -122,21 +108,21 @@ public class BubbleView extends View {
         if(y < maxTop && g < 0) return;
         if(y > maxBottom && g > 0) return;
 
-        if(bubble.getBounds().intersect(memo1.getBounds())){
+        if(bubble.getBounds().intersect(memo1.bubble.getBounds())){
             distance = "true";
-            found1 = true;
+            memo1.found = true;
         } else {
             distance = "false";
         }
 
-        if(bubble.getBounds().intersect(memo2.getBounds())){
+        if(bubble.getBounds().intersect(memo2.bubble.getBounds())){
             distance = "true";
-            found2 = true;
+            memo2.found = true;
         } else {
             distance = "false";
         }
 
-        if( found1 && found2 ) starting = true;
+        if( memo1.found && memo2.found ) starting = true;
 
         x = (int) (x - f * speed);
         y = (int) (y + g * speed);
