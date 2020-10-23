@@ -24,7 +24,7 @@ public class BubbleView extends View {
     private int y;
     private int width;
     private int height;
-    private int diameter = 50;
+    private int diameter = 200;
     private double speed = 2.0;
 
     private int maxLeft;
@@ -33,20 +33,22 @@ public class BubbleView extends View {
     private int maxBottom;
 
     private boolean starting = true;
-    private boolean found = false;
 
     private ShapeDrawable bubble;
 
-    private ShapeDrawable memo;
+    private ShapeDrawable memo1;
+    private ShapeDrawable memo2;
+    private boolean found1 = false;
+    private boolean found2 = false;
 
     private ArrayList<ShapeDrawable> rects;
 
     private Paint paint;
 
     String secondsRemaining = "5";
+    String distance = "false";
 
-    public BubbleView(Context context, int width, int height)
-    {
+    public BubbleView(Context context, int width, int height) {
         super(context);
 
         this.width = width;
@@ -63,10 +65,18 @@ public class BubbleView extends View {
         bubble.setBounds(x, y, x + diameter, y + diameter);
         bubble.getPaint().setColor(Color.BLUE);
 
-        int offset = 200;
-        memo = new ShapeDrawable(new OvalShape());
-        memo.setBounds(x-offset, y-offset, x + diameter - offset, y + diameter - offset);
-        memo.getPaint().setColor(Color.YELLOW);
+
+        int offsetX = new Random().nextInt(x * 2 + 1) - x;
+        int offsetY = new Random().nextInt(y * 2 + 1) - y;
+        memo1 = new ShapeDrawable(new OvalShape());
+        memo1.setBounds(x  + offsetX, y + offsetY, x + diameter + offsetX, y + diameter + offsetY);
+        memo1.getPaint().setColor(Color.YELLOW);
+
+        offsetX = new Random().nextInt(x * 2 + 1) - x;
+        offsetY = new Random().nextInt(y * 2 + 1) - y;
+        memo2 = new ShapeDrawable(new OvalShape());
+        memo2.setBounds(x + offsetX, y + offsetY, x + diameter + offsetX, y + diameter + offsetY);
+        memo2.getPaint().setColor(Color.YELLOW);
 
 
         new CountDownTimer(5000, 1000) {
@@ -88,11 +98,21 @@ public class BubbleView extends View {
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
         bubble.draw(canvas);
-        if(found || starting) {
-            memo.draw(canvas);
+        if(starting) {
+            memo1.draw(canvas);
+            memo2.draw(canvas);
+        } else {
+            if(found1){
+                memo1.draw(canvas);
+            }
+            if(found2) {
+                memo2.draw(canvas);
+            }
         }
 
-        canvas.drawText(secondsRemaining, 10, 50, paint);
+
+        canvas.drawText(secondsRemaining, 10, 100, paint);
+        canvas.drawText(distance, 10, 200, paint);
     }
 
     protected void move(float f, float g) {
@@ -101,6 +121,22 @@ public class BubbleView extends View {
         if(x > maxRight && f < 0) return;
         if(y < maxTop && g < 0) return;
         if(y > maxBottom && g > 0) return;
+
+        if(bubble.getBounds().intersect(memo1.getBounds())){
+            distance = "true";
+            found1 = true;
+        } else {
+            distance = "false";
+        }
+
+        if(bubble.getBounds().intersect(memo2.getBounds())){
+            distance = "true";
+            found2 = true;
+        } else {
+            distance = "false";
+        }
+
+        if( found1 && found2 ) starting = true;
 
         x = (int) (x - f * speed);
         y = (int) (y + g * speed);
