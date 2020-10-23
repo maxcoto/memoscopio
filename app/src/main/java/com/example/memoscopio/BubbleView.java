@@ -6,6 +6,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Point;
+import android.graphics.Rect;
 import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.shapes.OvalShape;
 import android.graphics.drawable.shapes.RectShape;
@@ -85,17 +86,9 @@ public class BubbleView extends View {
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
         bubble.draw(canvas);
-        if(starting) {
-            memo1.bubble.draw(canvas);
-            memo2.bubble.draw(canvas);
-        } else {
-            if(memo1.found){
-                memo1.bubble.draw(canvas);
-            }
-            if(memo1.found) {
-                memo2.bubble.draw(canvas);
-            }
-        }
+
+        memo1.draw(canvas, starting);
+        memo2.draw(canvas, starting);
 
         canvas.drawText(secondsRemaining, 10, 100, paint);
         canvas.drawText(distance, 10, 200, paint);
@@ -103,30 +96,24 @@ public class BubbleView extends View {
 
     protected void move(float f, float g) {
         if(starting) return;
-        if(x < maxLeft && f > 0) return;
-        if(x > maxRight && f < 0) return;
-        if(y < maxTop && g < 0) return;
-        if(y > maxBottom && g > 0) return;
+        this.check();
 
-        if(bubble.getBounds().intersect(memo1.bubble.getBounds())){
-            distance = "true";
-            memo1.found = true;
-        } else {
-            distance = "false";
-        }
-
-        if(bubble.getBounds().intersect(memo2.bubble.getBounds())){
-            distance = "true";
-            memo2.found = true;
-        } else {
-            distance = "false";
-        }
-
-        if( memo1.found && memo2.found ) starting = true;
+        if(x < maxLeft   && f > 0) f=0;
+        if(x > maxRight  && f < 0) f=0;
+        if(y < maxTop    && g < 0) g=0;
+        if(y > maxBottom && g > 0) g=0;
 
         x = (int) (x - f * speed);
         y = (int) (y + g * speed);
         bubble.setBounds(x, y, x + diameter, y + diameter);
         invalidate();
+    }
+
+    private void check(){
+        Rect rect = bubble.getBounds();
+        memo1.check(rect);
+        memo2.check(rect);
+
+        if( memo1.found && memo2.found ) starting = true;
     }
 }
