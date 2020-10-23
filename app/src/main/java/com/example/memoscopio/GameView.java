@@ -8,9 +8,12 @@ import android.graphics.Rect;
 import android.os.CountDownTimer;
 import android.view.View;
 
+import java.util.ArrayList;
+
 public class GameView extends View {
 
-    private final int diameter = 200;
+    private final int diameter = 70;
+    private final int amount = 10;
 
     private enum State {
         STARTING,
@@ -22,8 +25,7 @@ public class GameView extends View {
     private State state;
 
     private Bubble bubble;
-    private Memo memo1;
-    private Memo memo2;
+    private ArrayList<Memo> memos;
 
     private Context context;
 
@@ -45,12 +47,15 @@ public class GameView extends View {
         int y = (height/2) - diameter;
 
         bubble = new Bubble(x, y, width, height, diameter);
-        memo1 = new Memo(x, y);
-        memo2 = new Memo(x, y);
+
+        memos = new ArrayList<Memo>();
+        for(int i=0; i<amount; i++){
+            memos.add( new Memo(x, y) );
+        }
 
         paintMessage = new Paint();
-        paintMessage.setTextSize(70);
         paintCountdown = new Paint();
+        paintMessage.setTextSize(70);
         paintCountdown.setTextSize(200);
 
         start();
@@ -60,9 +65,11 @@ public class GameView extends View {
         super.onDraw(canvas);
         bubble.draw(canvas);
 
-        boolean showMemos = state != State.PLAYING;
-        memo1.draw(canvas, showMemos);
-        memo2.draw(canvas, showMemos);
+        boolean show = state != State.PLAYING;
+
+        for( Memo memo : memos ){
+            memo.draw(canvas, show);
+        }
 
         canvas.drawText(countdown, 20, 170, paintCountdown);
         canvas.drawText(message1, 20, 100, paintMessage);
@@ -94,10 +101,14 @@ public class GameView extends View {
 
     private void check(){
         Rect rect = bubble.getBounds();
-        memo1.check(rect);
-        memo2.check(rect);
 
-        if( memo1.found && memo2.found ) {
+        int found = 0;
+        for( Memo memo : memos ){
+            memo.check(rect);
+            found += memo.found ? 1 : 0;
+        }
+
+        if( found == amount ) {
             this.finish();
         }
     }
