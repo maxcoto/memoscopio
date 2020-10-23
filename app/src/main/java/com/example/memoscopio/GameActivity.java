@@ -8,42 +8,78 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
+import android.util.Log;
+import android.widget.Toast;
 
 public class GameActivity extends AppCompatActivity implements SensorEventListener {
 
     private SensorManager manager;
-    private BubbleView bubbleView;
-    private Sensor accel;
+    private GameView gameView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        manager = (SensorManager) getSystemService(SENSOR_SERVICE);
 
         DisplayMetrics displayMetrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
         int height = displayMetrics.heightPixels;
         int width = displayMetrics.widthPixels;
 
-        bubbleView = new BubbleView(GameActivity.this, width, height);
-        setContentView(bubbleView);
+        gameView = new GameView(GameActivity.this, width, height);
+        setContentView(gameView);
 
-        manager = (SensorManager)getSystemService(SENSOR_SERVICE);
-        accel = manager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
-        manager.registerListener(GameActivity.this, accel, SensorManager.SENSOR_DELAY_GAME);
-    }
-
-    public void onAccuracyChanged(Sensor sensor, int accuracy) {
     }
 
     public void onSensorChanged(SensorEvent event) {
-        bubbleView.move(event.values[0], event.values[1]);
+        synchronized (this) {
+            switch (event.sensor.getType()){
+                case Sensor.TYPE_ACCELEROMETER:
+                    gameView.move(event.values[0], event.values[1]);
+                    break;
+                case Sensor.TYPE_PROXIMITY:
+                    if(event.values[0] == 0){
+                        gameView.help(true);
+                    } else {
+                        gameView.help(false);
+                    }
+                    break;
+            }
+        }
     }
-    protected void onResume() {
-        super.onResume();
-        manager.registerListener(GameActivity.this, accel, SensorManager.SENSOR_DELAY_GAME);
+
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int i) {
     }
+
+    @Override
     protected void onPause() {
         super.onPause();
-        manager.unregisterListener(this);
+        stopSensors();
     }
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        startSensors();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        startSensors();
+    }
+
+    protected void startSensors(){
+        manager.registerListener(this, manager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_GAME);
+        manager.registerListener(this, manager.getDefaultSensor(Sensor.TYPE_PROXIMITY), SensorManager.SENSOR_DELAY_GAME);
+    }
+
+    protected void stopSensors(){
+        manager.unregisterListener(this, manager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER));
+        manager.unregisterListener(this, manager.getDefaultSensor(Sensor.TYPE_PROXIMITY));
+    }
+
 }
+

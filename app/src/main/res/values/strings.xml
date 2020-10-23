@@ -11,4 +11,6 @@
     <string name="_0Hint">0%</string>
     <string name="bateriaHint">Bateria</string>
     <string name="continuarHint">Continuar</string>
+    <string name="jugarHint">Jugar</string>
+    <string name="rankingHint">Ranking</string>
 </resources>

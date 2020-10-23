@@ -9,7 +9,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Memoscopio">
-
+        <activity android:name=".MenuActivity"></activity>
         <activity android:name=".RankingActivity" />
         <activity android:name=".BatteryActivity" />
         <activity
