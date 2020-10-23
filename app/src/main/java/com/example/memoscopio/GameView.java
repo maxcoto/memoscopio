@@ -10,6 +10,8 @@ import android.view.View;
 
 public class GameView extends View {
 
+    private final int diameter = 200;
+
     private enum State {
         STARTING,
         PLAYING,
@@ -17,19 +19,21 @@ public class GameView extends View {
         FINISHED
     }
 
-    private State state = State.STARTING;
+    private State state;
 
-    private final int diameter = 200;
     private Bubble bubble;
     private Memo memo1;
     private Memo memo2;
 
-    private Paint paint;
     private Context context;
 
     private long time;
     private int penalty = 0;
-    private String message1 = "5";
+
+    private Paint paintMessage;
+    private Paint paintCountdown;
+    private String countdown = "";
+    private String message1 = "";
     private String message2 = "";
     private String message3 = "";
 
@@ -44,21 +48,12 @@ public class GameView extends View {
         memo1 = new Memo(x, y);
         memo2 = new Memo(x, y);
 
-        new CountDownTimer(5000, 1000) {
-            public void onTick(long millisUntilFinished) {
-                message1 = "" + (millisUntilFinished / 1000);
-                invalidate();
-            }
-            public void onFinish() {
-                message1 = "";
-                time = System.currentTimeMillis();
-                state = State.PLAYING;
-            }
-        }.start();
+        paintMessage = new Paint();
+        paintMessage.setTextSize(70);
+        paintCountdown = new Paint();
+        paintCountdown.setTextSize(200);
 
-
-        paint = new Paint();
-        paint.setTextSize(70);
+        start();
     }
 
     protected void onDraw(Canvas canvas) {
@@ -69,10 +64,12 @@ public class GameView extends View {
         memo1.draw(canvas, showMemos);
         memo2.draw(canvas, showMemos);
 
-        canvas.drawText(message1, 20, 80, paint);
-        canvas.drawText(message2, 20, 150, paint);
-        canvas.drawText(message3, 20, 230, paint);
+        canvas.drawText(countdown, 20, 170, paintCountdown);
+        canvas.drawText(message1, 20, 100, paintMessage);
+        canvas.drawText(message2, 20, 180, paintMessage);
+        canvas.drawText(message3, 20, 260, paintMessage);
     }
+
 
     protected void move(float f, float g) {
         if(state == State.PLAYING) {
@@ -103,6 +100,21 @@ public class GameView extends View {
         if( memo1.found && memo2.found ) {
             this.finish();
         }
+    }
+
+    private void start(){
+        state = State.STARTING;
+
+        new CountDownTimer(6000, 1000) {
+            public void onTick(long millisUntilFinished) {
+                countdown = "" + (millisUntilFinished / 1000);
+            }
+            public void onFinish() {
+                countdown = "";
+                time = System.currentTimeMillis();
+                state = State.PLAYING;
+            }
+        }.start();
     }
 
     private void finish(){
