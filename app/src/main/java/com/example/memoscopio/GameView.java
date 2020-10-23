@@ -89,7 +89,8 @@ public class GameView extends View {
         this.starting = true;
 
         long elapsed = System.currentTimeMillis() - time;
-        message = "Muy bien! Tu tiempo fue: " + (elapsed/1000) + "s";
+        String result = String.format("%.3f", (elapsed/1000));
+        message = "Muy bien! Tu tiempo fue: " + result + "s";
         invalidate();
 
         new CountDownTimer(5000, 1000) {
