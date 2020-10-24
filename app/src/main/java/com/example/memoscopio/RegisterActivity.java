@@ -98,10 +98,17 @@ public class RegisterActivity extends AppCompatActivity {
 
                 Log.i("LOGUEO MAIN", "Datos: " + data );
 
-                String token = json.getString("token");
-                String token_refresh = json.getString("token_refresh");
+                String success = json.getString("success");
 
-                error(token);
+                if(success == "true"){
+                    String token = json.getString("token");
+                    String token_refresh = json.getString("token_refresh");
+                    error(token);
+                } else {
+                    String err =  json.getString("msg");
+                    error(err);
+                }
+
             } catch (JSONException e){
                 e.printStackTrace();
             }

@@ -42,6 +42,14 @@ public class LoginActivity extends AppCompatActivity {
 
         Connection.check(LoginActivity.this);
         configureReceiver();
+
+
+        User user = new User("test@test.com", "12345678");
+        Intent intent = new Intent(LoginActivity.this, UnlamService.class);
+        intent.putExtra("uri", Constants.LOGIN_URI);
+        intent.putExtra("action", UnlamService.ACTION_LOGIN);
+        intent.putExtra("data", user.loginData());
+        startService(intent);
     }
 
     private View.OnClickListener registerHandler = (_v) -> {
@@ -68,7 +76,7 @@ public class LoginActivity extends AppCompatActivity {
     };
 
     private void configureReceiver(){
-        filter = new IntentFilter(UnlamService.ACTION_REGISTER);
+        filter = new IntentFilter(UnlamService.ACTION_LOGIN);
         filter.addCategory(Intent.CATEGORY_DEFAULT);
         registerReceiver(callback, filter);
     }
@@ -82,10 +90,17 @@ public class LoginActivity extends AppCompatActivity {
 
                 Log.i("LOGUEO MAIN", "Datos: " + data );
 
-                String token = json.getString("token");
-                String token_refresh = json.getString("token_refresh");
+                String success = json.getString("success");
 
-                error(token);
+                if(success == "true"){
+                    String token = json.getString("token");
+                    String token_refresh = json.getString("token_refresh");
+                    error(token);
+                } else {
+                    String err =  json.getString("msg");
+                    error(err);
+                }
+
             } catch (JSONException e){
                 e.printStackTrace();
             }

@@ -9,5 +9,5 @@ public class Constants {
     public static final String LOGIN_URI = BASE_URI + "login";
     public static final String EVENT_URI = BASE_URI + "events";
 
-    public static final String ENVIRONMENT = "TEST";
+    public static final String ENVIRONMENT = "PROD";
 }
