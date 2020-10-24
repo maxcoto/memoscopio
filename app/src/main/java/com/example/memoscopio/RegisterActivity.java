@@ -9,7 +9,10 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class RegisterActivity extends AppCompatActivity {
+import java.io.DataInputStream;
+
+
+public class RegisterActivity extends AppCompatActivity implements UnlamCallback {
 
     private TextView nombreInput;
     private TextView apellidoInput;
@@ -57,6 +60,24 @@ public class RegisterActivity extends AppCompatActivity {
                 }
             }
         });
+
+
+        new UnlamAPI(this).execute();
+
+    }
+
+    public void onUnlamCallback(String texto){
+        try {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    error(texto);
+                }
+            });
+            Thread.sleep(300);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
     private boolean validate(){
@@ -108,6 +129,6 @@ public class RegisterActivity extends AppCompatActivity {
     }
 
     private void error(String texto) {
-        Toast.makeText(RegisterActivity.this, texto, Toast.LENGTH_SHORT).show();
+        Toast.makeText(RegisterActivity.this, texto, Toast.LENGTH_LONG).show();
     }
 }
