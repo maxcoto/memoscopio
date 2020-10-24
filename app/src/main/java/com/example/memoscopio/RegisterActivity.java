@@ -2,17 +2,24 @@ package com.example.memoscopio;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.DataInputStream;
 
 
-public class RegisterActivity extends AppCompatActivity implements UnlamCallback {
+public class RegisterActivity extends AppCompatActivity {
 
     private TextView nombreInput;
     private TextView apellidoInput;
@@ -23,6 +30,11 @@ public class RegisterActivity extends AppCompatActivity implements UnlamCallback
 
     private Button loginButton;
     private Button registerButton;
+
+    private JSONObject data = new JSONObject();
+
+    public IntentFilter filtro;
+    private ReceptorOperacion receiver = new ReceptorOperacion();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,16 +66,59 @@ public class RegisterActivity extends AppCompatActivity implements UnlamCallback
                 if(Connection.check(RegisterActivity.this)){
                     if(validate()){
                         error("todo ok");
-                        //Intent intent = new Intent(RegisterActivity.this, MainActivity.class);
-                        //startActivity(intent);
+                        Intent intent = new Intent(RegisterActivity.this, UnlamService.class);
+                        intent.putExtra("uri", "http://so-unlam.net.ar/api/api/register");
+                        intent.putExtra("datosJson", data.toString());
+                        startService(intent);
                     }
                 }
             }
         });
 
+        configurarBroadcastReceiver();
 
-        new UnlamAPI(this).execute();
+        try {
+            data.put("env", "TEST");
+            data.put("name", "maxi");
+            data.put("lastname", "perez");
+            data.put("dni", "35360791");
+            data.put("email", "maxi@maxi.com");
+            data.put("password", "12345678");
+            data.put("commission", "123");
+        } catch (Exception e){
+            e.printStackTrace();
+        }
 
+        Intent intent = new Intent(RegisterActivity.this, UnlamService.class);
+        intent.putExtra("uri", "http://so-unlam.net.ar/api/api/register");
+        intent.putExtra("datosJson", data.toString());
+        startService(intent);
+
+    }
+
+    private void configurarBroadcastReceiver(){
+        filtro = new IntentFilter("com.example.memoscopio.action.RESPUESTA_OPERACION");
+        filtro.addCategory(Intent.CATEGORY_DEFAULT);
+        registerReceiver(receiver, filtro);
+    }
+
+
+    public class ReceptorOperacion extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            try {
+                String datosJsonString = intent.getStringExtra("datosJson");
+                JSONObject datosJson = new JSONObject(datosJsonString);
+
+                Log.i("LOGUEO MAIN", "Datos: " + datosJson );
+
+                String token = datosJson.getString("token");
+                String token_refresh = datosJson.getString("token_refresh");
+
+            } catch (JSONException e){
+                e.printStackTrace();
+            }
+        }
     }
 
     public void onUnlamCallback(String texto){
@@ -83,46 +138,57 @@ public class RegisterActivity extends AppCompatActivity implements UnlamCallback
     private boolean validate(){
         String text;
 
-        text = nombreInput.getText().toString().trim();
-        if(text.length() == 0) {
-            error("El nombre no puede estar en blanco");
-            return false;
-        }
+        try {
+            data.put("env", "TEST");
 
-        text = apellidoInput.getText().toString().trim();
-        if(text.length() == 0) {
-            error("El apellido no puede estar en blanco");
-            return false;
-        }
+            text = nombreInput.getText().toString().trim();
+            if (text.length() == 0) {
+                error("El nombre no puede estar en blanco");
+                return false;
+            }
+            data.put("name", text);
 
-        text = dniInput.getText().toString().trim();
-        if(text.length() == 0) {
-            error("El DNI no puede estar en blanco");
-            return false;
-        }
+            text = apellidoInput.getText().toString().trim();
+            if (text.length() == 0) {
+                error("El apellido no puede estar en blanco");
+                return false;
+            }
+            data.put("lastname", text);
 
-        text = emailInput.getText().toString().trim();
-        if(text.length() == 0) {
-            error("El email no puede estar en blanco");
-            return false;
-        }
+            text = dniInput.getText().toString().trim();
+            if (text.length() == 0) {
+                error("El DNI no puede estar en blanco");
+                return false;
+            }
+            data.put("dni", Integer.parseInt(text));
 
-        String emailPattern = "[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+";
-        if(!text.matches(emailPattern)){
-            error("Formato de email invalido");
-            return false;
-        }
+            text = emailInput.getText().toString().trim();
+            if (text.length() == 0) {
+                error("El email no puede estar en blanco");
+                return false;
+            }
+            String emailPattern = "[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+";
+            if (!text.matches(emailPattern)) {
+                error("Formato de email invalido");
+                return false;
+            }
+            data.put("email", text);
 
-        text = passwordInput.getText().toString().trim();
-        if(text.length() < 8) {
-            error("La longitud del password debe ser de 8 caracteres como minimo");
-            return false;
-        }
+            text = passwordInput.getText().toString().trim();
+            if (text.length() < 8) {
+                error("La longitud del password debe ser de 8 caracteres como minimo");
+                return false;
+            }
+            data.put("password", text);
 
-        text = comisionInput.getText().toString().trim();
-        if(text.length() == 0) {
-            error("La comision no puede estar en blanco");
-            return false;
+            text = comisionInput.getText().toString().trim();
+            if (text.length() == 0) {
+                error("La comision no puede estar en blanco");
+                return false;
+            }
+            data.put("commission", Integer.parseInt(text));
+        } catch(Exception e){
+            e.printStackTrace();
         }
 
         return true;
