@@ -2,6 +2,10 @@ package com.example.memoscopio;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -11,10 +15,19 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 import android.widget.Toast;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 public class GameActivity extends AppCompatActivity implements SensorEventListener {
+
+    private final static String[] eventNames = new String[] {"STARTING", "PLAYING", "PAUSED", "FINISHED"};
 
     private SensorManager manager;
     private GameView gameView;
+
+    public IntentFilter filter;
+    private Callback callback = new Callback();
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,6 +43,23 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
         gameView = new GameView(GameActivity.this, width, height);
         setContentView(gameView);
 
+        configureReceiver();
+    }
+
+    public void sendEvent(Enum event){
+        JSONObject data = new JSONObject();
+        try {
+            data.put("type_events", "GAME_STATE");
+            data.put("description", event.toString());
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+
+        Intent intent = new Intent(GameActivity.this, UnlamService.class);
+        intent.putExtra("uri", Constants.EVENT_URI);
+        intent.putExtra("action", UnlamService.ACTION_EVENT);
+        intent.putExtra("data", data.toString());
+        startService(intent);
     }
 
     public void onSensorChanged(SensorEvent event) {
@@ -53,6 +83,7 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
     protected void onPause() {
         super.onPause();
         stopSensors();
+        unregisterReceiver(callback);
     }
 
     @Override
@@ -75,6 +106,37 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
     protected void stopSensors(){
         manager.unregisterListener(this, manager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER));
         manager.unregisterListener(this, manager.getDefaultSensor(Sensor.TYPE_PROXIMITY));
+    }
+
+
+    private void configureReceiver(){
+        filter = new IntentFilter(UnlamService.ACTION_EVENT);
+        filter.addCategory(Intent.CATEGORY_DEFAULT);
+        registerReceiver(callback, filter);
+    }
+
+
+    public class Callback extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            try {
+                String data = intent.getStringExtra("data");
+                JSONObject json = new JSONObject(data);
+
+                Log.i("LOGUEO EVENTO", "Datos: " + data );
+
+                String success = json.getString("success");
+
+                if(success == "true"){
+                    Log.i("LOGUEO EVENTO OK", "Datos: " + data );
+                } else {
+                    Log.i("LOGUEO EVENTO FAIL", "Datos: " + data );
+                }
+
+            } catch (JSONException e){
+                e.printStackTrace();
+            }
+        }
     }
 
 }

@@ -21,6 +21,7 @@ public class UnlamService extends IntentService {
     public static final String ACTION_REGISTER = "com.example.memoscopio.action.REGISTER";
     public static final String ACTION_LOGIN = "com.example.memoscopio.action.LOGIN";
     public static final String ACTION_EVENT = "com.example.memoscopio.action.EVENT";
+    public static final String ACTION_REFRESH = "com.example.memoscopio.action.REFRESH";
 
     private Exception exception = null;
 
@@ -64,38 +65,41 @@ public class UnlamService extends IntentService {
     }
 
     private String POST (String uri, String data){
-        HttpURLConnection urlConnection = null;
+        HttpURLConnection connection = null;
         String result ="";
 
         try {
             URL url = new URL(uri);
-            urlConnection = (HttpURLConnection) url.openConnection();
-            urlConnection.setRequestProperty("Content-Type","application/json; charset=UTF-8");
-            urlConnection.setDoOutput(true);
-            urlConnection.setDoInput(true);
-            urlConnection.setConnectTimeout(8000);
-            urlConnection.setRequestMethod("POST");
+            connection = (HttpURLConnection) url.openConnection();
+            if(User.token.length() > 0) {
+                connection.setRequestProperty("Authorization", "Bearer " + User.token);
+            }
+            connection.setRequestProperty("Content-Type","application/json; charset=UTF-8");
+            connection.setDoOutput(true);
+            connection.setDoInput(true);
+            connection.setConnectTimeout(8000);
+            connection.setRequestMethod("POST");
 
-            DataOutputStream wr = new DataOutputStream(urlConnection.getOutputStream());
-            wr.write(data.getBytes("UTF-8"));
-            wr.flush();
-            urlConnection.connect();
+            DataOutputStream out = new DataOutputStream(connection.getOutputStream());
+            out.write(data.getBytes("UTF-8"));
+            out.flush();
+            connection.connect();
 
-            int responseCode = urlConnection.getResponseCode();
+            int responseCode = connection.getResponseCode();
 
             if((responseCode == HttpURLConnection.HTTP_OK) || (responseCode == HttpURLConnection.HTTP_CREATED)) {
-                InputStreamReader inputStream = new InputStreamReader(urlConnection.getInputStream());
+                InputStreamReader inputStream = new InputStreamReader(connection.getInputStream());
                 result = convertInputStreamToString(inputStream).toString();
             } else if(responseCode == HttpURLConnection.HTTP_BAD_REQUEST) {
-                InputStreamReader inputStream = new InputStreamReader(urlConnection.getErrorStream());
+                InputStreamReader inputStream = new InputStreamReader(connection.getErrorStream());
                 result = convertInputStreamToString(inputStream).toString();
             } else {
                 result = "NO_OK";
             }
 
             exception = null;
-            wr.close();
-            urlConnection.disconnect();
+            out.close();
+            connection.disconnect();
             return result;
 
         } catch (ProtocolException e) {

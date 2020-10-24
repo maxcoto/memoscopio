@@ -89,6 +89,12 @@ public class RegisterActivity extends AppCompatActivity {
         registerReceiver(callback, filter);
     }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+        unregisterReceiver(callback);
+    }
+
 
     public class Callback extends BroadcastReceiver {
         @Override

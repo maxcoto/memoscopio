@@ -1,5 +1,6 @@
 package com.example.memoscopio;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Canvas;
@@ -15,7 +16,7 @@ public class GameView extends View {
     private final int diameter = 70;
     private final int amount = 1;
 
-    private enum State {
+    public enum State {
         STARTING,
         PLAYING,
         PAUSED,
@@ -27,7 +28,7 @@ public class GameView extends View {
     private Bubble bubble;
     private ArrayList<Memo> memos;
 
-    private Context context;
+    private GameActivity context;
 
     private long time;
     private int penalty = 0;
@@ -39,7 +40,7 @@ public class GameView extends View {
     private String message2 = "";
     private String message3 = "";
 
-    public GameView(Context context, int width, int height) {
+    public GameView(GameActivity context, int width, int height) {
         super(context);
         this.context = context;
 
@@ -89,12 +90,12 @@ public class GameView extends View {
     protected void help(boolean pause) {
         if(pause){
             if(state == State.PLAYING){
-                state = State.PAUSED;
+                setState(State.PAUSED);
                 penalty += 10;
             }
         } else {
             if(state == State.PAUSED){
-                state = State.PLAYING;
+                setState(State.PLAYING);
             }
         }
     }
@@ -114,7 +115,7 @@ public class GameView extends View {
     }
 
     private void start(){
-        state = State.STARTING;
+        setState(State.STARTING);
 
         new CountDownTimer(6000, 1000) {
             public void onTick(long millisUntilFinished) {
@@ -123,13 +124,13 @@ public class GameView extends View {
             public void onFinish() {
                 countdown = "";
                 time = System.currentTimeMillis();
-                state = State.PLAYING;
+                setState(State.PLAYING);
             }
         }.start();
     }
 
     private void finish(){
-        state = State.FINISHED;
+        setState(State.FINISHED);
 
         double elapsed = ((System.currentTimeMillis() - time)/1000.0) + penalty;
         String elapsedString = String.format("%.3f", elapsed);
@@ -144,7 +145,13 @@ public class GameView extends View {
             public void onFinish() {
                 Intent intent = new Intent(context, MenuActivity.class);
                 context.startActivity(intent);
+                finish();
             }
         }.start();
+    }
+
+    private void setState(State newState){
+        this.state = newState;
+        context.sendEvent(newState);
     }
 }

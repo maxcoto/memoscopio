@@ -24,7 +24,7 @@ public class SensorsActivity extends AppCompatActivity implements SensorEventLis
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_game);
+        setContentView(R.layout.activity_sensors);
 
         sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
 
@@ -52,7 +52,7 @@ public class SensorsActivity extends AppCompatActivity implements SensorEventLis
                     acelerometro.setText(txt);
 
                     if(event.values[0] > 25 || event.values[1] > 25 || event.values[2] > 25){
-                        Toast.makeText(SensorsActivity.this, "shake that ass baby", Toast.LENGTH_LONG).show();
+                        Toast.makeText(SensorsActivity.this, "shaked", Toast.LENGTH_LONG).show();
                     }
                     break;
                 case Sensor.TYPE_GYROSCOPE:

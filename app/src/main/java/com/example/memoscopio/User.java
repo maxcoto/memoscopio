@@ -11,8 +11,8 @@ public class User {
     private String password;
     private String commission;
 
-    public static String token;
-    public static String token_refresh;
+    public static String token = "";
+    public static String token_refresh = "";
 
     public User(String name, String lastname, String dni, String email, String password, String commission){
         this.name = name;
