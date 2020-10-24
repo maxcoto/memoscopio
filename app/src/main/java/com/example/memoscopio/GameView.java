@@ -13,7 +13,7 @@ import java.util.ArrayList;
 public class GameView extends View {
 
     private final int diameter = 70;
-    private final int amount = 10;
+    private final int amount = 1;
 
     private enum State {
         STARTING,

@@ -55,6 +55,7 @@ public class LoginActivity extends AppCompatActivity {
     private View.OnClickListener registerHandler = (_v) -> {
         Intent intent = new Intent(LoginActivity.this, RegisterActivity.class);
         startActivity(intent);
+        finish();
     };
 
     private View.OnClickListener loginHandler = (_v) -> {
@@ -93,9 +94,13 @@ public class LoginActivity extends AppCompatActivity {
                 String success = json.getString("success");
 
                 if(success == "true"){
-                    String token = json.getString("token");
-                    String token_refresh = json.getString("token_refresh");
-                    error(token);
+                    User.token = json.getString("token");
+                    User.token_refresh = json.getString("token_refresh");
+                    error(User.token);
+
+                    Intent i = new Intent(context, MenuActivity.class);
+                    startActivity(i);
+                    finish();
                 } else {
                     String err =  json.getString("msg");
                     error(err);
