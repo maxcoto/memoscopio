@@ -2,12 +2,19 @@ package com.example.memoscopio;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -16,6 +23,9 @@ public class LoginActivity extends AppCompatActivity {
 
     private TextView emailInput;
     private TextView passwordInput;
+
+    public IntentFilter filter;
+    private Callback callback = new Callback();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,56 +37,66 @@ public class LoginActivity extends AppCompatActivity {
         loginButton = findViewById(R.id.loginButton);
         registerButton = findViewById(R.id.registerButton);
 
+        registerButton.setOnClickListener(registerHandler);
+        loginButton.setOnClickListener(loginHandler);
+
         Connection.check(LoginActivity.this);
-
-        registerButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(LoginActivity.this, RegisterActivity.class);
-                startActivity(intent);
-            }
-        });
-
-        loginButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (Connection.check(LoginActivity.this)) {
-                    if(validate()){
-                        error("todo ok");
-                        //Intent intent = new Intent(RegisterActivity.this, MainActivity.class);
-                        //startActivity(intent);
-                    }
-                }
-
-            }
-        });
+        configureReceiver();
     }
 
-    private boolean validate(){
-        String text;
+    private View.OnClickListener registerHandler = (_v) -> {
+        Intent intent = new Intent(LoginActivity.this, RegisterActivity.class);
+        startActivity(intent);
+    };
 
-        text = emailInput.getText().toString().trim();
-        if(text.length() == 0) {
-            error("El email no puede estar en blanco");
-            return false;
+    private View.OnClickListener loginHandler = (_v) -> {
+        User user = new User(getValue(emailInput), getValue(passwordInput));
+
+        if(Connection.check(LoginActivity.this)){
+            String result = user.validateLogin();
+
+            if( result == "ok"){
+                Intent intent = new Intent(LoginActivity.this, UnlamService.class);
+                intent.putExtra("uri", Constants.LOGIN_URI);
+                intent.putExtra("action", UnlamService.ACTION_LOGIN);
+                intent.putExtra("data", user.loginData());
+                startService(intent);
+            } else {
+                error(result);
+            }
         }
+    };
 
-        String emailPattern = "[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+";
-        if(!text.matches(emailPattern)){
-            error("Formato de email invalido");
-            return false;
+    private void configureReceiver(){
+        filter = new IntentFilter(UnlamService.ACTION_REGISTER);
+        filter.addCategory(Intent.CATEGORY_DEFAULT);
+        registerReceiver(callback, filter);
+    }
+
+    public class Callback extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            try {
+                String data = intent.getStringExtra("data");
+                JSONObject json = new JSONObject(data);
+
+                Log.i("LOGUEO MAIN", "Datos: " + data );
+
+                String token = json.getString("token");
+                String token_refresh = json.getString("token_refresh");
+
+                error(token);
+            } catch (JSONException e){
+                e.printStackTrace();
+            }
         }
+    }
 
-        text = passwordInput.getText().toString().trim();
-        if(text.length() < 8) {
-            error("Debe ingresar un password valido");
-            return false;
-        }
-
-        return true;
+    private String getValue(TextView input){
+        return input.getText().toString().trim();
     }
 
     private void error(String texto) {
-        Toast.makeText(LoginActivity.this, texto, Toast.LENGTH_SHORT).show();
+        Toast.makeText(LoginActivity.this, texto, Toast.LENGTH_LONG).show();
     }
 }

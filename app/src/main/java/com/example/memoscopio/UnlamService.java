@@ -18,84 +18,74 @@ import java.net.URL;
 
 public class UnlamService extends IntentService {
 
-    // TODO: Rename actions, choose action names that describe tasks that this
-    // IntentService can perform, e.g. ACTION_FETCH_NEW_ITEMS
-    private static final String ACTION_FOO = "com.example.memoscopio.action.FOO";
-    private static final String ACTION_BAZ = "com.example.memoscopio.action.BAZ";
+    public static final String ACTION_REGISTER = "com.example.memoscopio.action.REGISTER";
+    public static final String ACTION_LOGIN = "com.example.memoscopio.action.LOGIN";
+    public static final String ACTION_EVENT = "com.example.memoscopio.action.EVENT";
 
-    // TODO: Rename parameters
-    private static final String EXTRA_PARAM1 = "com.example.memoscopio.extra.PARAM1";
-    private static final String EXTRA_PARAM2 = "com.example.memoscopio.extra.PARAM2";
-
-
-    private Exception mException=null;
-    private URL mUrl;
+    private Exception exception = null;
 
     public UnlamService() {
         super("UnlamService");
     }
 
-
     @Override
     protected void onHandleIntent(Intent intent) {
         try {
-            String uri = intent.getExtras().getString("uri");
-            JSONObject datosJson = new JSONObject(intent.getExtras().getString("datosJson"));
+            String uri = intent.getStringExtra("uri");
+            String action = intent.getStringExtra("action");
+            String data = intent.getStringExtra("data");
 
-            ejecutarPost(uri, datosJson);
+            JSONObject json = new JSONObject(data);
+            json.put("env", Constants.ENVIRONMENT);
+            data = json.toString();
+
+            executePost(uri, action, data);
         } catch (Exception e){
             e.printStackTrace();
         }
     }
 
-    protected void ejecutarPost(String uri, JSONObject datosJson){
-        String result = POST(uri,datosJson);
+    protected void executePost(String uri, String action, String data){
+        String result = POST(uri, data);
 
-        if(result==null){
-            Log.e("LOGUEO_SERVICE","Error en Get:\n"+mException.toString());
+        if(result == null){
+            Log.e("LOGUEO_SERVICE","Error en Get: \n" + exception.toString());
             return;
         }
-        if (result== "NO_OK"){
+
+        if (result == "NO_OK"){
             Log.e("LOGUEO_SERVICE","SE RECIBIO RESPONSE NO_OK");
             return;
         }
 
-        //Falta completar
-        Intent i = new Intent("com.example.memoscopio.action.RESPUESTA_OPERACION");
-        i.putExtra("datosJson",result);
-
+        Intent i = new Intent(action);
+        i.putExtra("data", result);
         sendBroadcast(i);
     }
 
-    private String POST (String uri, JSONObject datosJson){
+    private String POST (String uri, String data){
         HttpURLConnection urlConnection = null;
         String result ="";
-        try
-        {
 
-            URL mUrl = new URL(uri);
-
-            urlConnection = (HttpURLConnection) mUrl.openConnection();
+        try {
+            URL url = new URL(uri);
+            urlConnection = (HttpURLConnection) url.openConnection();
             urlConnection.setRequestProperty("Content-Type","application/json; charset=UTF-8");
             urlConnection.setDoOutput(true);
             urlConnection.setDoInput(true);
-            urlConnection.setConnectTimeout(5000);
+            urlConnection.setConnectTimeout(8000);
             urlConnection.setRequestMethod("POST");
 
             DataOutputStream wr = new DataOutputStream(urlConnection.getOutputStream());
-            wr.write(datosJson.toString().getBytes("UTF-8"));
-
+            wr.write(data.getBytes("UTF-8"));
             wr.flush();
-
             urlConnection.connect();
 
             int responseCode = urlConnection.getResponseCode();
 
-            if((responseCode == HttpURLConnection.HTTP_OK) || (responseCode == HttpURLConnection.HTTP_CREATED))
-            {
+            if((responseCode == HttpURLConnection.HTTP_OK) || (responseCode == HttpURLConnection.HTTP_CREATED)) {
                 InputStreamReader inputStream = new InputStreamReader(urlConnection.getInputStream());
                 result = convertInputStreamToString(inputStream).toString();
-
             } else if(responseCode == HttpURLConnection.HTTP_BAD_REQUEST) {
                 InputStreamReader inputStream = new InputStreamReader(urlConnection.getErrorStream());
                 result = convertInputStreamToString(inputStream).toString();
@@ -103,7 +93,7 @@ public class UnlamService extends IntentService {
                 result = "NO_OK";
             }
 
-            mException = null;
+            exception = null;
             wr.close();
             urlConnection.disconnect();
             return result;
@@ -130,5 +120,4 @@ public class UnlamService extends IntentService {
         br.close();
         return result;
     }
-
 }
