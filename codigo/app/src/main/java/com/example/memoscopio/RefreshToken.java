@@ -18,7 +18,8 @@ import java.net.URL;
 
 public class RefreshToken extends AsyncTask<String, String, String> {
 
-    private final static int TOKEN_TIMEOUT = 1500000;
+    private final static int TOKEN_TIMEOUT = 5000;
+    //private final static int TOKEN_TIMEOUT = 1500000;
 
     public RefreshToken(){
     }
@@ -44,8 +45,8 @@ public class RefreshToken extends AsyncTask<String, String, String> {
             JSONObject json = null;
             try {
                 json = new JSONObject(response);
-                String success = json.getString("succeess");
-                if(success == "true") {
+                String success = json.getString("success");
+                if(success.equals("true")) {
                     User.token = json.getString("token");
                     User.token_refresh = json.getString("token_refresh");
                 } else {
@@ -53,6 +54,7 @@ public class RefreshToken extends AsyncTask<String, String, String> {
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
+                serverResponding = false;
             }
         }
 
@@ -88,7 +90,10 @@ public class RefreshToken extends AsyncTask<String, String, String> {
                 InputStreamReader inputStream = new InputStreamReader(connection.getErrorStream());
                 result = convertInputStreamToString(inputStream).toString();
             } else {
-                result = "NO_OK";
+                JSONObject error = new JSONObject();
+                error.put("success", "false");
+                error.put("msg", "Error en el servidor");
+                result = error.toString();
             }
 
             Log.e("LOGUEO REFRESH","MSG: \n" + result);
@@ -104,6 +109,9 @@ public class RefreshToken extends AsyncTask<String, String, String> {
             e.printStackTrace();
             return null;
         } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        } catch (JSONException e) {
             e.printStackTrace();
             return null;
         }
