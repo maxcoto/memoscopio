@@ -19,9 +19,13 @@ import java.net.URL;
 
 public class UnlamService extends IntentService {
 
+    public static final int TIMEOUT = 5000;
     public static final String ACTION_REGISTER = "com.example.memoscopio.action.REGISTER";
     public static final String ACTION_LOGIN = "com.example.memoscopio.action.LOGIN";
     public static final String ACTION_EVENT = "com.example.memoscopio.action.EVENT";
+
+    public static final String ACTION_RANKING_GET = "com.example.memoscopio.action.RANKING_GET";
+    public static final String ACTION_RANKING_SET = "com.example.memoscopio.action.RANKING_SET";
 
     private Exception exception = null;
 
@@ -35,19 +39,20 @@ public class UnlamService extends IntentService {
             String uri = intent.getStringExtra("uri");
             String action = intent.getStringExtra("action");
             String data = intent.getStringExtra("data");
+            String method = intent.getStringExtra("method");
 
             JSONObject json = new JSONObject(data);
             json.put("env", Constants.ENVIRONMENT);
             data = json.toString();
 
-            executePost(uri, action, data);
+            executeRequest(uri, action, data, method);
         } catch (Exception e){
             e.printStackTrace();
         }
     }
 
-    protected void executePost(String uri, String action, String data){
-        String result = POST(uri, data);
+    protected void executeRequest(String uri, String action, String data, String method){
+        String result = REQUEST(uri, data, method);
 
         if(result == null){
             exception.printStackTrace();
@@ -55,14 +60,15 @@ public class UnlamService extends IntentService {
             return;
         }
 
+        Log.e("LOGUEO ACTION", action);
         Intent i = new Intent(action);
         i.putExtra("data", result);
         sendBroadcast(i);
     }
 
-    private String POST (String uri, String data){
+    private String REQUEST (String uri, String data, String method){
         HttpURLConnection connection = null;
-        String result ="";
+        String result = "";
 
         try {
             URL url = new URL(uri);
@@ -71,17 +77,24 @@ public class UnlamService extends IntentService {
                 connection.setRequestProperty("Authorization", "Bearer " + User.token);
             }
             connection.setRequestProperty("Content-Type","application/json; charset=UTF-8");
-            connection.setDoOutput(true);
-            connection.setDoInput(true);
-            connection.setConnectTimeout(8000);
-            connection.setRequestMethod("POST");
+            connection.setConnectTimeout(TIMEOUT);
+            connection.setRequestMethod(method);
+            DataOutputStream out = null;
 
-            DataOutputStream out = new DataOutputStream(connection.getOutputStream());
-            out.write(data.getBytes("UTF-8"));
-            out.flush();
+            if(method.equals("POST")) {
+                connection.setDoOutput(true);
+                connection.setDoInput(true);
+                out = new DataOutputStream(connection.getOutputStream());
+                out.write(data.getBytes("UTF-8"));
+                out.flush();
+            }
+
             connection.connect();
 
             int responseCode = connection.getResponseCode();
+
+            Log.e("LOGUEO_SERVICE","RESPONSE CODE GET " + responseCode);
+            Log.e("LOGUEO_SERVICE","RESPONSE CODE GET " + method);
 
             if((responseCode == HttpURLConnection.HTTP_OK) || (responseCode == HttpURLConnection.HTTP_CREATED)) {
                 InputStreamReader inputStream = new InputStreamReader(connection.getInputStream());
@@ -96,7 +109,7 @@ public class UnlamService extends IntentService {
                 result = error.toString();
             }
 
-            out.close();
+            if(out != null) out.close();
             connection.disconnect();
             return result;
 

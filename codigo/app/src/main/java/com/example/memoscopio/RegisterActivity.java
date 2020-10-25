@@ -72,6 +72,7 @@ public class RegisterActivity extends AppCompatActivity {
                 intent.putExtra("uri", Constants.REGISTER_URI);
                 intent.putExtra("action", UnlamService.ACTION_REGISTER);
                 intent.putExtra("data", user.registerData());
+                intent.putExtra("method", "POST");
                 startService(intent);
             } else {
                 error(result);

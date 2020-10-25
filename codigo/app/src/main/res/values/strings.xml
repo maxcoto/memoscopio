@@ -14,4 +14,6 @@
     <string name="jugarHint">Jugar</string>
     <string name="rankingHint">Ranking</string>
     <string name="guardarHint">Guardar</string>
+    <string name="ranking">RANKING</string>
+    <string name="snapshot">snapshot</string>
 </resources>

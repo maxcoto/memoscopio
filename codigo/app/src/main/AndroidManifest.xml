@@ -14,7 +14,13 @@
         <activity android:name=".MenuActivity">
         </activity>
 
-        <activity android:name=".RankingActivity" />
+        <activity android:name=".RankingActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
 
         <activity android:name=".BatteryActivity" />
 
@@ -25,11 +31,6 @@
         </activity>
 
         <activity android:name=".LoginActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
 
         <activity android:name=".RegisterActivity">

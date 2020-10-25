@@ -61,6 +61,7 @@ public class LoginActivity extends AppCompatActivity {
                 intent.putExtra("uri", Constants.LOGIN_URI);
                 intent.putExtra("action", UnlamService.ACTION_LOGIN);
                 intent.putExtra("data", user.loginData());
+                intent.putExtra("method", "POST");
                 startService(intent);
             } else {
                 error(result);

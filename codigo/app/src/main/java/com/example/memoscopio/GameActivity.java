@@ -71,6 +71,7 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
         intent.putExtra("uri", Constants.EVENT_URI);
         intent.putExtra("action", UnlamService.ACTION_EVENT);
         intent.putExtra("data", data.toString());
+        intent.putExtra("method", "POST");
         startService(intent);
 
         String str = event.toString() + " -> " + x + ", " + y + ", " + z + ", " + p;

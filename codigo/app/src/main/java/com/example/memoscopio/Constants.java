@@ -10,6 +10,10 @@ public class Constants {
     public static final String EVENT_URI = BASE_URI + "event";
     public static final String REFRESH_URI = BASE_URI + "refresh";
 
+    public static final String BASE_RANKING_URI = "http://rankingapi.herokuapp.com/";
+    public static final String RANKING_GET_URI = BASE_RANKING_URI + "ranking/get";
+    public static final String RANKING_SET_URI = BASE_RANKING_URI + "ranking/set";
+
     public static final String ENVIRONMENT = "PROD";
 
     public static final String INDEX_PREFERENCE = "index";
