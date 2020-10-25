@@ -97,7 +97,6 @@ public class UnlamService extends IntentService {
                 result = "NO_OK";
             }
 
-            exception = null;
             out.close();
             connection.disconnect();
             return result;

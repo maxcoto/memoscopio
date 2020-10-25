@@ -10,26 +10,38 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Memoscopio"
         android:usesCleartextTraffic="true">
-        <activity android:name=".MenuActivity" />
+
+        <activity android:name=".MenuActivity">
+        </activity>
 
         <activity android:name=".RankingActivity" />
+
         <activity android:name=".BatteryActivity" />
+
         <activity
             android:name=".GameActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar">
+        </activity>
+
         <activity android:name=".LoginActivity"></activity>
+
         <activity android:name=".RegisterActivity">
+        </activity>
+
+        <activity android:name=".SensorsActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".SensorsActivity" />
+
         <service
             android:name=".UnlamService"
-            android:exported="false"></service>
+            android:exported="false">
+        </service>
+
     </application>
     <uses-permission android:name="android.permission.INTERNET" />
 

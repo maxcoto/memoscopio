@@ -1,25 +1,55 @@
 package com.example.memoscopio;
 
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.SharedPreferences;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
+import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
+import org.json.JSONObject;
+
+import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
+
+@RequiresApi(api = Build.VERSION_CODES.O)
 public class SensorsActivity extends AppCompatActivity implements SensorEventListener  {
+
+    private final static String STORE = "xyzp";
+    private final static String INDEX = "index";
 
     private SensorManager sensorManager;
 
     private TextView acelerometro;
-    private TextView giroscopio;
     private TextView proximidad;
     private TextView detecta;
+    private ListView listView;
 
+    private Button saveButton;
+
+    private String x;
+    private String y;
+    private String z;
+    private String p;
+
+    private int index;
+
+    private Set<String> set;
+    private SharedPreferences preferences;
+    private DecimalFormat format;
+
+    private ArrayList<String> list = new ArrayList<String>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,50 +58,57 @@ public class SensorsActivity extends AppCompatActivity implements SensorEventLis
 
         sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
 
+        listView = findViewById(R.id.listView);
         acelerometro = findViewById(R.id.acelerometro);
-        giroscopio = findViewById(R.id.giroscopio);
         proximidad = findViewById(R.id.proximidad);
-        detecta = findViewById(R.id.detecta);
+        saveButton  = findViewById(R.id.saveButton);
+
+        saveButton.setOnClickListener(saveHandler);
+
+        format = new DecimalFormat("#.##");
+
+        preferences = getSharedPreferences("sensors", MODE_PRIVATE);
+
+        index = preferences.getInt(INDEX, 0);
+
+        for(int i=0; i<=index; i++){
+            String str = preferences.getString(STORE + i, "");
+            list.add(str);
+        }
+
+        ArrayAdapter adapter = new ArrayAdapter<String>(this, R.layout.sensors_listview, list);
+        listView.setAdapter(adapter);
     }
+
+    private View.OnClickListener saveHandler = (_v) -> {
+        String str = x + ", " + y + ", " + z + ", " + p;
+        list.add(str);
+        index++;
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putString(STORE+index, str);
+        editor.putInt(INDEX, index);
+        editor.commit();
+    };
 
     @Override
     public void onSensorChanged(SensorEvent event) {
         String txt = "";
 
         synchronized (this) {
-
-            Log.d("sensor", event.sensor.getName());
-            Log.d("sensor 2 id", String.valueOf(this.getTaskId()));
-
             switch (event.sensor.getType()){
                 case Sensor.TYPE_ACCELEROMETER:
                     txt += "acelerometro:\n";
-                    txt += "x: " + event.values[0] + "\n";
-                    txt += "y: " + event.values[1] + "\n";
-                    txt += "z: " + event.values[2] + "\n";
+                    x = "x: " + format.format(event.values[0]);
+                    y = "y: " + format.format(event.values[1]);
+                    z = "z: " + format.format(event.values[2]);
+                    txt += x + "\n" + y + "\n" + z + "\n";
                     acelerometro.setText(txt);
-
-                    if(event.values[0] > 25 || event.values[1] > 25 || event.values[2] > 25){
-                        Toast.makeText(SensorsActivity.this, "shaked", Toast.LENGTH_LONG).show();
-                    }
-                    break;
-                case Sensor.TYPE_GYROSCOPE:
-                    txt += "giroscopio:\n";
-                    txt += "x: " + event.values[0] + "\n";
-                    txt += "y: " + event.values[1] + "\n";
-                    txt += "z: " + event.values[2] + "\n";
-                    giroscopio.setText(txt);
                     break;
                 case Sensor.TYPE_PROXIMITY:
                     txt += "proximidad:\n";
-                    txt += event.values[0] + "\n";
+                    p = "p: " + format.format(event.values[0]);
+                    txt += p + "\n";
                     proximidad.setText(txt);
-
-                    if(event.values[0] == 0){
-                        detecta.setText("proximidad detectada");
-                    } else {
-                        detecta.setText("-");
-                    }
                     break;
             }
         }
@@ -102,16 +139,12 @@ public class SensorsActivity extends AppCompatActivity implements SensorEventLis
 
     protected void startSensors(){
         sensorManager.registerListener(this, sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_GAME);
-        sensorManager.registerListener(this, sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE), SensorManager.SENSOR_DELAY_FASTEST);
         sensorManager.registerListener(this, sensorManager.getDefaultSensor(Sensor.TYPE_PROXIMITY), SensorManager.SENSOR_DELAY_FASTEST);
-        sensorManager.registerListener(this, sensorManager.getDefaultSensor(Sensor.TYPE_PRESSURE), SensorManager.SENSOR_DELAY_FASTEST);
     }
 
     protected void stopSensors(){
         sensorManager.unregisterListener(this, sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER));
-        sensorManager.unregisterListener(this, sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE));
         sensorManager.unregisterListener(this, sensorManager.getDefaultSensor(Sensor.TYPE_PROXIMITY));
-        sensorManager.unregisterListener(this, sensorManager.getDefaultSensor(Sensor.TYPE_PRESSURE));
     }
 
 }

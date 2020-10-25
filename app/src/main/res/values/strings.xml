@@ -13,4 +13,5 @@
     <string name="continuarHint">Continuar</string>
     <string name="jugarHint">Jugar</string>
     <string name="rankingHint">Ranking</string>
+    <string name="guardarHint">Guardar</string>
 </resources>
