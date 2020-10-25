@@ -1,8 +1,7 @@
 package com.example.memoscopio;
 
-import android.content.Intent;
 import android.os.AsyncTask;
-import android.os.CountDownTimer;
+import android.os.Handler;
 import android.util.Log;
 
 import org.json.JSONException;
@@ -19,6 +18,8 @@ import java.net.URL;
 
 public class RefreshToken extends AsyncTask<String, String, String> {
 
+    private final static int TOKEN_TIMEOUT = 1500000;
+
     public RefreshToken(){
     }
 
@@ -29,24 +30,31 @@ public class RefreshToken extends AsyncTask<String, String, String> {
 
     protected String doInBackground(String... params) {
 
-        new CountDownTimer(5000, 3000) {
-            public void onTick(long millisUntilFinished) {
+        boolean serverResponding = true;
+
+        while(serverResponding){
+
+            try {
+                Thread.sleep(TOKEN_TIMEOUT);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
 
-            public void onFinish() {
-                String response = doRefresh();
-                JSONObject json = null;
-                try {
-                    json = new JSONObject(response);
+            String response = doRefresh();
+            JSONObject json = null;
+            try {
+                json = new JSONObject(response);
+                String success = json.getString("succeess");
+                if(success == "true") {
                     User.token = json.getString("token");
                     User.token_refresh = json.getString("token_refresh");
-                } catch (JSONException e) {
-                    e.printStackTrace();
+                } else {
+                    serverResponding = false;
                 }
-
-                new RefreshToken().execute();
+            } catch (JSONException e) {
+                e.printStackTrace();
             }
-        }.start();
+        }
 
         return "";
     }
@@ -58,27 +66,18 @@ public class RefreshToken extends AsyncTask<String, String, String> {
         try {
             URL url = new URL(Constants.REFRESH_URI);
             connection = (HttpURLConnection) url.openConnection();
-            Log.e("LOGUEO REFRESH","MSG: 0 \n");
-            if(User.token_refresh.length() > 0){
-                connection.setRequestProperty("Authorization", "Bearer " + User.token_refresh);
-            } else {
-                connection.setRequestProperty("Authorization", "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE2MDM2MDExNDQsInR5cGUiOiJyZWZyZXNoIiwidXNlciI6eyJlbWFpbCI6InRlc3RAdGVzdC5jb20iLCJkbmkiOjEyMzQ1Njc4fX0.55USFLf5iI9guVceeCy_-62lSUv0t-fQsbF6i6_pcn8");
-            }
+            connection.setRequestProperty("Authorization", "Bearer " + User.token_refresh);
             connection.setRequestProperty("Content-Type","application/json; charset=UTF-8");
             connection.setDoOutput(true);
             connection.setDoInput(true);
             connection.setConnectTimeout(8000);
             connection.setRequestMethod("PUT");
 
-            Log.e("LOGUEO REFRESH","MSG: 1 \n");
-
             DataOutputStream out = new DataOutputStream(connection.getOutputStream());
             out.write("".getBytes("UTF-8"));
             out.flush();
 
             connection.connect();
-
-            Log.e("LOGUEO REFRESH","MSG: 2 \n");
 
             int responseCode = connection.getResponseCode();
 
@@ -109,7 +108,6 @@ public class RefreshToken extends AsyncTask<String, String, String> {
             return null;
         }
     }
-
 
 
     private StringBuilder convertInputStreamToString(InputStreamReader inputStream) throws IOException {

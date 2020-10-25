@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.Context;
 import android.util.Log;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
@@ -49,12 +50,8 @@ public class UnlamService extends IntentService {
         String result = POST(uri, data);
 
         if(result == null){
-            Log.e("LOGUEO_SERVICE","Error en Get: \n" + exception.toString());
-            return;
-        }
-
-        if (result == "NO_OK"){
-            Log.e("LOGUEO_SERVICE","SE RECIBIO RESPONSE NO_OK");
+            exception.printStackTrace();
+            Log.e("LOGUEO_SERVICE","Exception found, stacktrace: \n" + exception.toString());
             return;
         }
 
@@ -93,7 +90,10 @@ public class UnlamService extends IntentService {
                 InputStreamReader inputStream = new InputStreamReader(connection.getErrorStream());
                 result = convertInputStreamToString(inputStream).toString();
             } else {
-                result = "NO_OK";
+                JSONObject error = new JSONObject();
+                error.put("success", "false");
+                error.put("msg", "Error en el servidor");
+                result = error.toString();
             }
 
             out.close();
@@ -101,13 +101,16 @@ public class UnlamService extends IntentService {
             return result;
 
         } catch (ProtocolException e) {
-            e.printStackTrace();
+            exception = e;
             return null;
         } catch (MalformedURLException e) {
-            e.printStackTrace();
+            exception = e;
             return null;
         } catch (IOException e) {
-            e.printStackTrace();
+            exception = e;
+            return null;
+        } catch (JSONException e){
+            exception = e;
             return null;
         }
     }

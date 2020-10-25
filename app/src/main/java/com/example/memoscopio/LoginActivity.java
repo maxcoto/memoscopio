@@ -42,15 +42,6 @@ public class LoginActivity extends AppCompatActivity {
 
         Connection.check(LoginActivity.this);
         configureReceiver();
-
-
-        new RefreshToken().execute();
-        /*User user = new User("test@test.com", "12345678");
-        Intent intent = new Intent(LoginActivity.this, UnlamService.class);
-        intent.putExtra("uri", Constants.LOGIN_URI);
-        intent.putExtra("action", UnlamService.ACTION_LOGIN);
-        intent.putExtra("data", user.loginData());
-        startService(intent);*/
     }
 
     private View.OnClickListener registerHandler = (_v) -> {
@@ -103,7 +94,9 @@ public class LoginActivity extends AppCompatActivity {
                 if(success == "true"){
                     User.token = json.getString("token");
                     User.token_refresh = json.getString("token_refresh");
-                    error(User.token);
+                    error("Logueado correctamente");
+
+                    new RefreshToken().execute();
 
                     Intent i = new Intent(context, MenuActivity.class);
                     startActivity(i);

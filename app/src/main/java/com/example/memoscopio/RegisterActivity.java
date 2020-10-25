@@ -110,7 +110,9 @@ public class RegisterActivity extends AppCompatActivity {
                 if(success == "true"){
                     User.token = json.getString("token");
                     User.token_refresh = json.getString("token_refresh");
-                    error(User.token);
+                    error("Registrado correctamente");
+
+                    new RefreshToken().execute();
 
                     Intent i = new Intent(context, MenuActivity.class);
                     startActivity(i);
