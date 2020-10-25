@@ -43,6 +43,10 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
 
         manager = (SensorManager) getSystemService(SENSOR_SERVICE);
 
+        format = new DecimalFormat("#.##");
+        preferences = getSharedPreferences("sensors", MODE_PRIVATE);
+        index = preferences.getInt(Constants.INDEX_PREFERENCE, 0);
+
         DisplayMetrics displayMetrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
         int height = displayMetrics.heightPixels;
@@ -50,10 +54,6 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
 
         gameView = new GameView(GameActivity.this, width, height);
         setContentView(gameView);
-
-        format = new DecimalFormat("#.##");
-        preferences = getSharedPreferences("sensors", MODE_PRIVATE);
-        index = preferences.getInt(Constants.INDEX_PREFERENCE, 0);
 
         configureReceiver();
     }
