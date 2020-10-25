@@ -2,20 +2,18 @@ package com.example.memoscopio;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.content.Context;
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.BatteryManager;
 import android.os.Bundle;
 import android.os.CountDownTimer;
-import android.view.View;
-import android.widget.Button;
 import android.widget.TextView;
+
 
 public class BatteryActivity extends AppCompatActivity {
 
-    private TextView batteryLabel;
-
+    @SuppressLint("SetTextI18n")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -28,7 +26,7 @@ public class BatteryActivity extends AppCompatActivity {
         int scale = batteryStatus.getIntExtra(BatteryManager.EXTRA_SCALE, -1);
         int batteryPct = (int) (level * 100 / (float) scale);
 
-        batteryLabel = findViewById(R.id.batteryLabel);
+        TextView batteryLabel = findViewById(R.id.batteryLabel);
         batteryLabel.setText(batteryPct + "%");
 
         new CountDownTimer(4000, 1000) {

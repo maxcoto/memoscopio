@@ -55,13 +55,13 @@ public class RegisterActivity extends AppCompatActivity {
         configureReceiver();
     }
 
-    private View.OnClickListener loginHandler = (_v) -> {
+    private final View.OnClickListener loginHandler = (_v) -> {
         Intent intent = new Intent(RegisterActivity.this, LoginActivity.class);
         startActivity(intent);
         finish();
     };
 
-    private View.OnClickListener registerHandler = (_v) -> {
+    private final View.OnClickListener registerHandler = (_v) -> {
         User user = new User(getValue(nombreInput), getValue(apellidoInput), getValue(dniInput), getValue(emailInput), getValue(passwordInput), getValue(comisionInput));
 
         if(Connection.check(RegisterActivity.this)){

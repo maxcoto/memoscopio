@@ -25,15 +25,10 @@ import java.util.Set;
 
 @RequiresApi(api = Build.VERSION_CODES.O)
 public class SensorsActivity extends AppCompatActivity implements SensorEventListener  {
-
-    private final static String STORE = "xyzp";
-    private final static String INDEX = "index";
-
     private SensorManager sensorManager;
 
     private TextView acelerometro;
     private TextView proximidad;
-    private TextView detecta;
     private ListView listView;
 
     private Button saveButton;
@@ -45,7 +40,6 @@ public class SensorsActivity extends AppCompatActivity implements SensorEventLis
 
     private int index;
 
-    private Set<String> set;
     private SharedPreferences preferences;
     private DecimalFormat format;
 
@@ -66,13 +60,11 @@ public class SensorsActivity extends AppCompatActivity implements SensorEventLis
         saveButton.setOnClickListener(saveHandler);
 
         format = new DecimalFormat("#.##");
-
         preferences = getSharedPreferences("sensors", MODE_PRIVATE);
-
-        index = preferences.getInt(INDEX, 0);
+        index = preferences.getInt(Constants.INDEX_PREFERENCE, 0);
 
         for(int i=0; i<=index; i++){
-            String str = preferences.getString(STORE + i, "");
+            String str = preferences.getString(Constants.STORE_PREFERENCE + i, "");
             list.add(str);
         }
 
@@ -81,12 +73,12 @@ public class SensorsActivity extends AppCompatActivity implements SensorEventLis
     }
 
     private View.OnClickListener saveHandler = (_v) -> {
-        String str = x + ", " + y + ", " + z + ", " + p;
+        String str = "SNAPSHOT -> " + x + ", " + y + ", " + z + ", " + p;
         list.add(str);
         index++;
         SharedPreferences.Editor editor = preferences.edit();
-        editor.putString(STORE+index, str);
-        editor.putInt(INDEX, index);
+        editor.putString(Constants.STORE_PREFERENCE + index, str);
+        editor.putInt(Constants.INDEX_PREFERENCE, index);
         editor.commit();
     };
 

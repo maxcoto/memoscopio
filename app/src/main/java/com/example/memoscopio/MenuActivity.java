@@ -9,18 +9,14 @@ import android.widget.Button;
 
 public class MenuActivity extends AppCompatActivity {
 
-    private Button playButton;
-    private Button rankingButton;
-    private Button sensorsButton;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_menu);
 
-        playButton = findViewById(R.id.playButton);
-        rankingButton = findViewById(R.id.rankingButton);
-        sensorsButton = findViewById(R.id.sensorsButton);
+        Button playButton = findViewById(R.id.playButton);
+        Button rankingButton = findViewById(R.id.rankingButton);
+        Button sensorsButton = findViewById(R.id.sensorsButton);
 
         playButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -36,7 +32,6 @@ public class MenuActivity extends AppCompatActivity {
             public void onClick(View view) {
                 Intent intent = new Intent(MenuActivity.this, RankingActivity.class);
                 startActivity(intent);
-                finish();
             }
         });
 

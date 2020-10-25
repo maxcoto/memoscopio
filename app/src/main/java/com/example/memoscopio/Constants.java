@@ -11,4 +11,8 @@ public class Constants {
     public static final String REFRESH_URI = BASE_URI + "refresh";
 
     public static final String ENVIRONMENT = "TEST";
+
+    public static final String INDEX_PREFERENCE = "index";
+    public static final String STORE_PREFERENCE = "xyzp";
+
 }

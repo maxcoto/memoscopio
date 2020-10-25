@@ -1,7 +1,6 @@
 package com.example.memoscopio;
 
-import android.app.Activity;
-import android.content.Context;
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.graphics.Canvas;
 import android.graphics.Paint;
@@ -11,10 +10,11 @@ import android.view.View;
 
 import java.util.ArrayList;
 
+@SuppressLint("ViewConstructor")
 public class GameView extends View {
 
-    private final int diameter = 70;
-    private final int amount = 1;
+    private static final int DIAMETER = 70;
+    private static final int AMOUNT = 10;
 
     public enum State {
         STARTING,
@@ -25,16 +25,16 @@ public class GameView extends View {
 
     private State state;
 
-    private Bubble bubble;
-    private ArrayList<Memo> memos;
+    private final Bubble bubble;
+    private final ArrayList<Memo> memos = new ArrayList<>();
 
-    private GameActivity context;
+    private final GameActivity context;
 
     private long time;
     private int penalty = 0;
 
-    private Paint paintMessage;
-    private Paint paintCountdown;
+    private final Paint paintMessage;
+    private final Paint paintCountdown;
     private String countdown = "";
     private String message1 = "";
     private String message2 = "";
@@ -44,13 +44,12 @@ public class GameView extends View {
         super(context);
         this.context = context;
 
-        int x = (width-diameter)/2;
-        int y = (height/2) - diameter;
+        int x = (width - DIAMETER)/2;
+        int y = (height/2) - DIAMETER;
 
-        bubble = new Bubble(x, y, width, height, diameter);
+        bubble = new Bubble(x, y, width, height, DIAMETER);
 
-        memos = new ArrayList<Memo>();
-        for(int i=0; i<amount; i++){
+        for(int i=0; i<AMOUNT; i++){
             memos.add( new Memo(x, y) );
         }
 
@@ -109,7 +108,7 @@ public class GameView extends View {
             found += memo.found ? 1 : 0;
         }
 
-        if( found == amount ) {
+        if( found == AMOUNT ) {
             this.finish();
         }
     }
@@ -129,6 +128,7 @@ public class GameView extends View {
         }.start();
     }
 
+    @SuppressLint("DefaultLocale")
     private void finish(){
         setState(State.FINISHED);
 
@@ -141,7 +141,8 @@ public class GameView extends View {
         message3 += "Penalidad: " + penaltyString + "s";
 
         new CountDownTimer(5000, 1000) {
-            public void onTick(long millisUntilFinished) {};
+            public void onTick(long millisUntilFinished) {}
+
             public void onFinish() {
                 Intent intent = new Intent(context, MenuActivity.class);
                 context.startActivity(intent);
