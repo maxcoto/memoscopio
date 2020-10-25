@@ -12,6 +12,7 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.util.DisplayMetrics;
 import android.util.Log;
 
@@ -37,9 +38,13 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
     private SharedPreferences preferences;
     private DecimalFormat format;
 
+    private String android_id;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        android_id = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
 
         manager = (SensorManager) getSystemService(SENSOR_SERVICE);
 
@@ -74,12 +79,32 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
         intent.putExtra("method", "POST");
         startService(intent);
 
-        String str = event.toString() + " -> " + x + ", " + y + ", " + z + ", " + p;
-        index++;
-        SharedPreferences.Editor editor = preferences.edit();
-        editor.putString(Constants.STORE_PREFERENCE + index, str);
-        editor.putInt(Constants.INDEX_PREFERENCE, index);
-        editor.apply();
+        if(event.toString() != "STARTING") {
+            String str = event.toString() + " -> " + x + ", " + y + ", " + z + ", " + p;
+            index++;
+            SharedPreferences.Editor editor = preferences.edit();
+            editor.putString(Constants.STORE_PREFERENCE + index, str);
+            editor.putInt(Constants.INDEX_PREFERENCE, index);
+            editor.apply();
+        }
+    }
+
+    public void sendScore(String points){
+        JSONObject data = new JSONObject();
+        try {
+            data.put("uuid", android_id);
+            data.put("name", User.email);
+            data.put("points", points);
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+
+        Intent intent = new Intent(GameActivity.this, UnlamService.class);
+        intent.putExtra("uri", Constants.RANKING_SET_URI);
+        intent.putExtra("action", UnlamService.ACTION_EVENT);
+        intent.putExtra("data", data.toString());
+        intent.putExtra("method", "POST");
+        startService(intent);
     }
 
     public void onSensorChanged(SensorEvent event) {

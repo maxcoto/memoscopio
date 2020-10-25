@@ -130,6 +130,8 @@ public class GameView extends View {
 
     @SuppressLint("DefaultLocale")
     private void finish(){
+        if(state == State.FINISHED) return;
+
         setState(State.FINISHED);
 
         double elapsed = ((System.currentTimeMillis() - time)/1000.0) + penalty;
@@ -140,13 +142,15 @@ public class GameView extends View {
         message2 = "Tu tiempo fue: " + elapsedString + "s\n" ;
         message3 += "Penalidad: " + penaltyString + "s";
 
+        context.sendScore(elapsedString);
+
         new CountDownTimer(5000, 1000) {
             public void onTick(long millisUntilFinished) {}
 
             public void onFinish() {
                 Intent intent = new Intent(context, MenuActivity.class);
                 context.startActivity(intent);
-                finish();
+                context.finish();
             }
         }.start();
     }

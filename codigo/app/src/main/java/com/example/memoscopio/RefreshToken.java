@@ -18,7 +18,6 @@ import java.net.URL;
 
 public class RefreshToken extends AsyncTask<String, String, String> {
 
-    //private final static int TOKEN_TIMEOUT = 5000;
     private final static int TOKEN_TIMEOUT = 1500000;
 
     public RefreshToken(){
