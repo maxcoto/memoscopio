@@ -44,12 +44,13 @@ public class LoginActivity extends AppCompatActivity {
         configureReceiver();
 
 
-        User user = new User("test@test.com", "12345678");
+        new RefreshToken().execute();
+        /*User user = new User("test@test.com", "12345678");
         Intent intent = new Intent(LoginActivity.this, UnlamService.class);
         intent.putExtra("uri", Constants.LOGIN_URI);
         intent.putExtra("action", UnlamService.ACTION_LOGIN);
         intent.putExtra("data", user.loginData());
-        startService(intent);
+        startService(intent);*/
     }
 
     private View.OnClickListener registerHandler = (_v) -> {

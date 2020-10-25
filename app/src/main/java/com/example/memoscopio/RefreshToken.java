@@ -1,10 +1,11 @@
 package com.example.memoscopio;
 
-import android.app.IntentService;
 import android.content.Intent;
-import android.content.Context;
+import android.os.AsyncTask;
+import android.os.CountDownTimer;
 import android.util.Log;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
@@ -16,73 +17,68 @@ import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
 
-public class UnlamService extends IntentService {
+public class RefreshToken extends AsyncTask<String, String, String> {
 
-    public static final String ACTION_REGISTER = "com.example.memoscopio.action.REGISTER";
-    public static final String ACTION_LOGIN = "com.example.memoscopio.action.LOGIN";
-    public static final String ACTION_EVENT = "com.example.memoscopio.action.EVENT";
-
-    private Exception exception = null;
-
-    public UnlamService() {
-        super("UnlamService");
+    public RefreshToken(){
     }
 
     @Override
-    protected void onHandleIntent(Intent intent) {
-        try {
-            String uri = intent.getStringExtra("uri");
-            String action = intent.getStringExtra("action");
-            String data = intent.getStringExtra("data");
-
-            JSONObject json = new JSONObject(data);
-            json.put("env", Constants.ENVIRONMENT);
-            data = json.toString();
-
-            executePost(uri, action, data);
-        } catch (Exception e){
-            e.printStackTrace();
-        }
+    protected void onPreExecute() {
+        super.onPreExecute();
     }
 
-    protected void executePost(String uri, String action, String data){
-        String result = POST(uri, data);
+    protected String doInBackground(String... params) {
 
-        if(result == null){
-            Log.e("LOGUEO_SERVICE","Error en Get: \n" + exception.toString());
-            return;
-        }
+        new CountDownTimer(5000, 3000) {
+            public void onTick(long millisUntilFinished) {
+            }
 
-        if (result == "NO_OK"){
-            Log.e("LOGUEO_SERVICE","SE RECIBIO RESPONSE NO_OK");
-            return;
-        }
+            public void onFinish() {
+                String response = doRefresh();
+                JSONObject json = null;
+                try {
+                    json = new JSONObject(response);
+                    User.token = json.getString("token");
+                    User.token_refresh = json.getString("token_refresh");
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
 
-        Intent i = new Intent(action);
-        i.putExtra("data", result);
-        sendBroadcast(i);
+                new RefreshToken().execute();
+            }
+        }.start();
+
+        return "";
     }
 
-    private String POST (String uri, String data){
+    private String doRefresh() {
         HttpURLConnection connection = null;
         String result ="";
 
         try {
-            URL url = new URL(uri);
+            URL url = new URL(Constants.REFRESH_URI);
             connection = (HttpURLConnection) url.openConnection();
-            if(User.token.length() > 0) {
-                connection.setRequestProperty("Authorization", "Bearer " + User.token);
+            Log.e("LOGUEO REFRESH","MSG: 0 \n");
+            if(User.token_refresh.length() > 0){
+                connection.setRequestProperty("Authorization", "Bearer " + User.token_refresh);
+            } else {
+                connection.setRequestProperty("Authorization", "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE2MDM2MDExNDQsInR5cGUiOiJyZWZyZXNoIiwidXNlciI6eyJlbWFpbCI6InRlc3RAdGVzdC5jb20iLCJkbmkiOjEyMzQ1Njc4fX0.55USFLf5iI9guVceeCy_-62lSUv0t-fQsbF6i6_pcn8");
             }
             connection.setRequestProperty("Content-Type","application/json; charset=UTF-8");
             connection.setDoOutput(true);
             connection.setDoInput(true);
             connection.setConnectTimeout(8000);
-            connection.setRequestMethod("POST");
+            connection.setRequestMethod("PUT");
+
+            Log.e("LOGUEO REFRESH","MSG: 1 \n");
 
             DataOutputStream out = new DataOutputStream(connection.getOutputStream());
-            out.write(data.getBytes("UTF-8"));
+            out.write("".getBytes("UTF-8"));
             out.flush();
+
             connection.connect();
+
+            Log.e("LOGUEO REFRESH","MSG: 2 \n");
 
             int responseCode = connection.getResponseCode();
 
@@ -95,6 +91,8 @@ public class UnlamService extends IntentService {
             } else {
                 result = "NO_OK";
             }
+
+            Log.e("LOGUEO REFRESH","MSG: \n" + result);
 
             out.close();
             connection.disconnect();
@@ -111,6 +109,8 @@ public class UnlamService extends IntentService {
             return null;
         }
     }
+
+
 
     private StringBuilder convertInputStreamToString(InputStreamReader inputStream) throws IOException {
         BufferedReader br = new BufferedReader(inputStream);
