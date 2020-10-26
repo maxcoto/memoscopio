@@ -56,9 +56,9 @@ public class UnlamService extends IntentService {
             return;
         }
 
-        Log.e("LOGUEO ACTION", action);
-        Log.e("LOGUEO URI", uri);
-        Log.e("LOGUEO DATA", data);
+        Log.i("LOGUEO ACTION", action);
+        Log.i("LOGUEO URI", uri);
+        Log.i("LOGUEO DATA", data);
 
         Intent i = new Intent(action);
         i.putExtra("data", result);
@@ -92,8 +92,8 @@ public class UnlamService extends IntentService {
 
             int responseCode = connection.getResponseCode();
 
-            Log.e("LOGUEO REQUEST","RESPONSE CODE " + responseCode);
-            Log.e("LOGUEO_REQUEST","METHOD " + method);
+            Log.i("LOGUEO REQUEST","RESPONSE CODE " + responseCode);
+            Log.i("LOGUEO_REQUEST","METHOD " + method);
 
             if((responseCode == HttpURLConnection.HTTP_OK) || (responseCode == HttpURLConnection.HTTP_CREATED)) {
                 InputStreamReader inputStream = new InputStreamReader(connection.getInputStream());

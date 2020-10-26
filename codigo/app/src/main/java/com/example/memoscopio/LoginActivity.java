@@ -86,7 +86,7 @@ public class LoginActivity extends AppCompatActivity {
                 String data = intent.getStringExtra("data");
                 JSONObject json = new JSONObject(data);
 
-                Log.i("LOGUEO MAIN", "Datos: " + data );
+                Log.i("LOGUEO LOGIN", "Datos: " + data );
 
                 String success = json.getString("success");
 

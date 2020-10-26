@@ -174,7 +174,7 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
                 if(success.equals("true")){
                     Log.i("LOGUEO EVENTO OK", "Datos: " + data );
                 } else {
-                    Log.i("LOGUEO EVENTO FAIL", "Datos: " + data );
+                    Log.e("LOGUEO EVENTO FAIL", "Datos: " + data );
                 }
 
             } catch (JSONException e){

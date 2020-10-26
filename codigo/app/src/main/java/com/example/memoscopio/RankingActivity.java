@@ -57,17 +57,14 @@ public class RankingActivity extends AppCompatActivity {
                 String success = json.getString("success");
 
                 if(success.equals("true")){
-                    Log.e("LOGUEO RANKING", "Datos: " + data );
+                    Log.i("LOGUEO RANKING", "Datos: " + data );
 
                     JSONArray ranking = json.getJSONArray("ranking");
-
-                    Log.e("LOGUEO RANKING PERSON", ranking.toString() );
 
                     for (int i = 0; i < ranking.length(); i++) {
                         JSONObject row = ranking.getJSONObject(i);
                         String person = "" + (i+1) + ") " + row.getString("points") + " - " + row.getString("name");
                         list.add(person);
-                        Log.e("LOGUEO RANKING PERSON", person );
                     }
 
                     ArrayAdapter adapter = new ArrayAdapter<>(context, R.layout.sensors_listview, list);

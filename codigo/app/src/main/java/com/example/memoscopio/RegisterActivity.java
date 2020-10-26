@@ -99,7 +99,7 @@ public class RegisterActivity extends AppCompatActivity {
                 String data = intent.getStringExtra("data");
                 JSONObject json = new JSONObject(data);
 
-                Log.i("LOGUEO MAIN", "Datos: " + data );
+                Log.i("LOGUEO REGISTER", "Datos: " + data );
 
                 String success = json.getString("success");
 

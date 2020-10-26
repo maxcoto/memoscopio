@@ -95,7 +95,7 @@ public class RefreshToken extends AsyncTask<String, String, String> {
                 result = error.toString();
             }
 
-            Log.e("LOGUEO REFRESH","MSG: \n" + result);
+            Log.i("LOGUEO REFRESH","MSG: \n" + result);
 
             out.close();
             connection.disconnect();
