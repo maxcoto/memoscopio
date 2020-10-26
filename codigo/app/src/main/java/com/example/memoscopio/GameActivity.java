@@ -2,6 +2,7 @@ package com.example.memoscopio;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.annotation.SuppressLint;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -38,13 +39,9 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
     private SharedPreferences preferences;
     private DecimalFormat format;
 
-    private String android_id;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        android_id = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
 
         manager = (SensorManager) getSystemService(SENSOR_SERVICE);
 
@@ -79,7 +76,7 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
         intent.putExtra("method", "POST");
         startService(intent);
 
-        if(event.toString() != "STARTING") {
+        if(!event.toString().equals("STARTING")) {
             String str = event.toString() + " -> " + x + ", " + y + ", " + z + ", " + p;
             index++;
             SharedPreferences.Editor editor = preferences.edit();
@@ -92,7 +89,6 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
     public void sendScore(String points){
         JSONObject data = new JSONObject();
         try {
-            data.put("uuid", android_id);
             data.put("name", User.email);
             data.put("points", points);
         } catch (Exception e){
@@ -172,8 +168,6 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
                 String data = intent.getStringExtra("data");
                 assert data != null;
                 JSONObject json = new JSONObject(data);
-
-                Log.i("LOGUEO EVENTO", "Datos: " + data );
 
                 String success = json.getString("success");
 

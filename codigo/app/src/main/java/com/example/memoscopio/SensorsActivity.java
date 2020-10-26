@@ -1,14 +1,10 @@
 package com.example.memoscopio;
 
-import androidx.annotation.RequiresApi;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.SharedPreferences;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
-import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -16,22 +12,16 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import org.json.JSONObject;
-
 import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Set;
 
-@RequiresApi(api = Build.VERSION_CODES.O)
+import androidx.appcompat.app.AppCompatActivity;
+
 public class SensorsActivity extends AppCompatActivity implements SensorEventListener  {
     private SensorManager sensorManager;
 
     private TextView acelerometro;
     private TextView proximidad;
-    private ListView listView;
-
-    private Button saveButton;
 
     private String x;
     private String y;
@@ -43,7 +33,7 @@ public class SensorsActivity extends AppCompatActivity implements SensorEventLis
     private SharedPreferences preferences;
     private DecimalFormat format;
 
-    private ArrayList<String> list = new ArrayList<String>();
+    private final ArrayList<String> list = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,10 +42,10 @@ public class SensorsActivity extends AppCompatActivity implements SensorEventLis
 
         sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
 
-        listView = findViewById(R.id.listView);
+        ListView listView = findViewById(R.id.listView);
         acelerometro = findViewById(R.id.acelerometro);
         proximidad = findViewById(R.id.proximidad);
-        saveButton  = findViewById(R.id.saveButton);
+        Button saveButton = findViewById(R.id.saveButton);
 
         saveButton.setOnClickListener(saveHandler);
 
@@ -68,18 +58,18 @@ public class SensorsActivity extends AppCompatActivity implements SensorEventLis
             list.add(str);
         }
 
-        ArrayAdapter adapter = new ArrayAdapter<String>(this, R.layout.sensors_listview, list);
+        ArrayAdapter adapter = new ArrayAdapter<>(this, R.layout.sensors_listview, list);
         listView.setAdapter(adapter);
     }
 
-    private View.OnClickListener saveHandler = (_v) -> {
+    private final View.OnClickListener saveHandler = (_v) -> {
         String str = "SNAPSHOT -> " + x + ", " + y + ", " + z + ", " + p;
         list.add(str);
         index++;
         SharedPreferences.Editor editor = preferences.edit();
         editor.putString(Constants.STORE_PREFERENCE + index, str);
         editor.putInt(Constants.INDEX_PREFERENCE, index);
-        editor.commit();
+        editor.apply();
     };
 
     @Override

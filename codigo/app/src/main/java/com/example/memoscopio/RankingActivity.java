@@ -10,22 +10,18 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 public class RankingActivity extends AppCompatActivity {
 
-    private ArrayList<String> list = new ArrayList<String>();
+    private final ArrayList<String> list = new ArrayList<>();
     private ListView listView;
 
     public IntentFilter filter;
     private final Callback callback = new Callback();
-    ArrayAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,7 +70,7 @@ public class RankingActivity extends AppCompatActivity {
                         Log.e("LOGUEO RANKING PERSON", person );
                     }
 
-                    adapter = new ArrayAdapter<String>(context, R.layout.sensors_listview, list);
+                    ArrayAdapter adapter = new ArrayAdapter<>(context, R.layout.sensors_listview, list);
                     listView.setAdapter(adapter);
 
                 } else {

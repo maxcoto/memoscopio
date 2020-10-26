@@ -41,7 +41,7 @@ public class RefreshToken extends AsyncTask<String, String, String> {
             }
 
             String response = doRefresh();
-            JSONObject json = null;
+            JSONObject json;
             try {
                 json = new JSONObject(response);
                 String success = json.getString("success");
@@ -61,8 +61,8 @@ public class RefreshToken extends AsyncTask<String, String, String> {
     }
 
     private String doRefresh() {
-        HttpURLConnection connection = null;
-        String result ="";
+        HttpURLConnection connection;
+        String result;
 
         try {
             URL url = new URL(Constants.REFRESH_URI);

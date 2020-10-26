@@ -12,11 +12,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.io.DataInputStream;
 
 
 public class RegisterActivity extends AppCompatActivity {
@@ -28,11 +25,8 @@ public class RegisterActivity extends AppCompatActivity {
     private TextView passwordInput;
     private TextView comisionInput;
 
-    private Button loginButton;
-    private Button registerButton;
-
     public IntentFilter filter;
-    private Callback callback = new Callback();
+    private final Callback callback = new Callback();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,8 +39,9 @@ public class RegisterActivity extends AppCompatActivity {
         emailInput      = findViewById(R.id.emailInput);
         passwordInput   = findViewById(R.id.passwordInput);
         comisionInput   = findViewById(R.id.comisionInput);
-        loginButton     = findViewById(R.id.loginButton);
-        registerButton  = findViewById(R.id.registerButton);
+
+        Button loginButton = findViewById(R.id.loginButton);
+        Button registerButton = findViewById(R.id.registerButton);
 
         loginButton.setOnClickListener(loginHandler);
         registerButton.setOnClickListener(registerHandler);
@@ -67,7 +62,7 @@ public class RegisterActivity extends AppCompatActivity {
         if(Connection.check(RegisterActivity.this)){
             String result = user.validateRegister();
 
-            if( result == "ok"){
+            if(result.equals("ok")){
                 Intent intent = new Intent(RegisterActivity.this, UnlamService.class);
                 intent.putExtra("uri", Constants.REGISTER_URI);
                 intent.putExtra("action", UnlamService.ACTION_REGISTER);
@@ -108,7 +103,7 @@ public class RegisterActivity extends AppCompatActivity {
 
                 String success = json.getString("success");
 
-                if(success == "true"){
+                if(success.equals("true")){
                     User.token = json.getString("token");
                     User.token_refresh = json.getString("token_refresh");
                     error("Registrado correctamente");

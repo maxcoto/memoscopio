@@ -18,14 +18,11 @@ import org.json.JSONObject;
 
 public class LoginActivity extends AppCompatActivity {
 
-    private Button registerButton;
-    private Button loginButton;
-
     private TextView emailInput;
     private TextView passwordInput;
 
     public IntentFilter filter;
-    private Callback callback = new Callback();
+    private final Callback callback = new Callback();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,8 +31,9 @@ public class LoginActivity extends AppCompatActivity {
 
         emailInput = findViewById(R.id.emailInput);
         passwordInput = findViewById(R.id.passwordInput);
-        loginButton = findViewById(R.id.loginButton);
-        registerButton = findViewById(R.id.registerButton);
+
+        Button loginButton = findViewById(R.id.loginButton);
+        Button registerButton = findViewById(R.id.registerButton);
 
         registerButton.setOnClickListener(registerHandler);
         loginButton.setOnClickListener(loginHandler);
@@ -44,19 +42,19 @@ public class LoginActivity extends AppCompatActivity {
         configureReceiver();
     }
 
-    private View.OnClickListener registerHandler = (_v) -> {
+    private final View.OnClickListener registerHandler = (_v) -> {
         Intent intent = new Intent(LoginActivity.this, RegisterActivity.class);
         startActivity(intent);
         finish();
     };
 
-    private View.OnClickListener loginHandler = (_v) -> {
+    private final View.OnClickListener loginHandler = (_v) -> {
         User user = new User(getValue(emailInput), getValue(passwordInput));
 
         if(Connection.check(LoginActivity.this)){
             String result = user.validateLogin();
 
-            if( result == "ok"){
+            if(result.equals("ok")){
                 Intent intent = new Intent(LoginActivity.this, UnlamService.class);
                 intent.putExtra("uri", Constants.LOGIN_URI);
                 intent.putExtra("action", UnlamService.ACTION_LOGIN);
@@ -92,7 +90,7 @@ public class LoginActivity extends AppCompatActivity {
 
                 String success = json.getString("success");
 
-                if(success == "true"){
+                if(success.equals("true")){
                     User.token = json.getString("token");
                     User.token_refresh = json.getString("token_refresh");
                     error("Logueado correctamente");

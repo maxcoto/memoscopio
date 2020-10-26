@@ -2,12 +2,9 @@ package com.example.memoscopio;
 
 import android.app.IntentService;
 import android.content.Intent;
-import android.content.Context;
 import android.util.Log;
-
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -25,7 +22,6 @@ public class UnlamService extends IntentService {
     public static final String ACTION_EVENT = "com.example.memoscopio.action.EVENT";
 
     public static final String ACTION_RANKING_GET = "com.example.memoscopio.action.RANKING_GET";
-    public static final String ACTION_RANKING_SET = "com.example.memoscopio.action.RANKING_SET";
 
     private Exception exception = null;
 
@@ -70,8 +66,8 @@ public class UnlamService extends IntentService {
     }
 
     private String REQUEST (String uri, String data, String method){
-        HttpURLConnection connection = null;
-        String result = "";
+        HttpURLConnection connection;
+        String result;
 
         try {
             URL url = new URL(uri);
