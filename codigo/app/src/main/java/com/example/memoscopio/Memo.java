@@ -10,7 +10,7 @@ import java.util.Random;
 
 public class Memo {
 
-    private final static int DIAMETER = 100;
+    private final static int DIAMETER = 60;
 
     public ShapeDrawable bubble;
     public boolean found;
@@ -23,7 +23,6 @@ public class Memo {
         bubble = new ShapeDrawable(new OvalShape());
         bubble.setBounds(x  + offsetX, y + offsetY, x + DIAMETER + offsetX, y + DIAMETER + offsetY);
         bubble.getPaint().setColor(Color.YELLOW);
-
     }
 
     public void draw(Canvas canvas, boolean show){

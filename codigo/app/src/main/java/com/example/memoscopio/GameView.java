@@ -13,7 +13,7 @@ import java.util.ArrayList;
 @SuppressLint("ViewConstructor")
 public class GameView extends View {
 
-    private static final int DIAMETER = 70;
+    private static final int DIAMETER = 50;
     private static final int AMOUNT = 10;
 
     public enum State {
@@ -55,7 +55,7 @@ public class GameView extends View {
 
         paintMessage = new Paint();
         paintCountdown = new Paint();
-        paintMessage.setTextSize(70);
+        paintMessage.setTextSize(40);
         paintCountdown.setTextSize(200);
 
         start();
