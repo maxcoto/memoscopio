@@ -137,6 +137,12 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
     }
 
     @Override
+    protected void onPause() {
+        super.onPause();
+        stopSensors();
+    }
+
+    @Override
     protected void onRestart() {
         super.onRestart();
         startSensors();
