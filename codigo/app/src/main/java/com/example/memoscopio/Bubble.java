@@ -8,6 +8,7 @@ import android.graphics.drawable.shapes.OvalShape;
 
 public class Bubble {
 
+    // velocidad configurable
     private static final double SPEED = 2.0;
     private final int diameter;
 
@@ -26,11 +27,13 @@ public class Bubble {
         this.y = y;
         this.diameter = diameter;
 
+        // calcula los limites de la pelotita
         this.maxLeft = 0;
         this.maxTop = 0;
         this.maxRight = width - diameter;
         this.maxBottom = height - diameter;
 
+        // la inicializa y la pinta de color azul
         bubble = new ShapeDrawable(new OvalShape());
         bubble.setBounds(x, y, x + diameter, y + diameter);
         bubble.getPaint().setColor(Color.BLUE);
@@ -44,6 +47,9 @@ public class Bubble {
         return bubble.getBounds();
     }
 
+    // metodo para mover la pelotita
+    // si se excede de los limites y se quiere continuar en esa direccion
+    // se pone en 0 el valor de movimiento f o g
     protected void move(float f, float g) {
         if(x < maxLeft   && f > 0) f=0;
         if(x > maxRight  && f < 0) f=0;

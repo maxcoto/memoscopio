@@ -56,6 +56,8 @@ public class RegisterActivity extends AppCompatActivity {
         finish();
     };
 
+    // envia los datos al servidor solo si hay internet
+    // y si los datos del usuario son validos para el registro
     private final View.OnClickListener registerHandler = (_v) -> {
         User user = new User(getValue(nombreInput), getValue(apellidoInput), getValue(dniInput), getValue(emailInput), getValue(passwordInput), getValue(comisionInput));
 
@@ -79,28 +81,24 @@ public class RegisterActivity extends AppCompatActivity {
         return input.getText().toString().trim();
     }
 
+    // registra el receptor de IntentService como callback
     private void configureReceiver(){
         filter = new IntentFilter(UnlamService.ACTION_REGISTER);
         filter.addCategory(Intent.CATEGORY_DEFAULT);
         registerReceiver(callback, filter);
     }
 
-    @Override
-    protected void onPause() {
-        super.onPause();
-        unregisterReceiver(callback);
-    }
-
-
+    // recibe la respuesta del servidor
+    // en caso de exito asigna el token y refresh del usuario y pone en ejecucion el refresh token
+    // luego procede a la vista del menu
+    // en caso de error muestra el mensaje en pantalla
     public class Callback extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
             try {
                 String data = intent.getStringExtra("data");
                 JSONObject json = new JSONObject(data);
-
                 Log.i("LOGUEO REGISTER", "Datos: " + data );
-
                 String success = json.getString("success");
 
                 if(success.equals("true")){
@@ -109,7 +107,6 @@ public class RegisterActivity extends AppCompatActivity {
                     error("Registrado correctamente");
 
                     new RefreshToken().execute();
-
                     Intent i = new Intent(context, MenuActivity.class);
                     startActivity(i);
                     finish();

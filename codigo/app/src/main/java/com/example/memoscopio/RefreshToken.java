@@ -28,12 +28,13 @@ public class RefreshToken extends AsyncTask<String, String, String> {
         super.onPreExecute();
     }
 
+    // mientras el servidor responda, este hilo se duerme durante
+    // 25 minutos y luego intenta refrescar el token
+    // vuelve a guardar los valores en los atributos estaticos del usuario
     protected String doInBackground(String... params) {
-
         boolean serverResponding = true;
 
         while(serverResponding){
-
             try {
                 Thread.sleep(TOKEN_TIMEOUT);
             } catch (InterruptedException e) {
@@ -94,8 +95,6 @@ public class RefreshToken extends AsyncTask<String, String, String> {
                 error.put("msg", "Error en el servidor");
                 result = error.toString();
             }
-
-            Log.i("LOGUEO REFRESH","MSG: \n" + result);
 
             out.close();
             connection.disconnect();

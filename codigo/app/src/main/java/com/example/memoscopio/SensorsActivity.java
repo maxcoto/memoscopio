@@ -49,19 +49,26 @@ public class SensorsActivity extends AppCompatActivity implements SensorEventLis
 
         saveButton.setOnClickListener(saveHandler);
 
+        // formato para numeros flotantes
         format = new DecimalFormat("#.##");
+
+        // lee el objeto preferencias
         preferences = getSharedPreferences("sensors", MODE_PRIVATE);
+        // lee el indice o lo inicializa en 0
         index = preferences.getInt(Constants.INDEX_PREFERENCE, 0);
 
+        // recorre los valores de sensores almacenados y los guarda en una lista
         for(int i=0; i<=index; i++){
             String str = preferences.getString(Constants.STORE_PREFERENCE + i, "");
             list.add(str);
         }
 
+        // vincula esa lista de datos con un ListView, para mostrarlos en pantalla
         ArrayAdapter adapter = new ArrayAdapter<>(this, R.layout.sensors_listview, list);
         listView.setAdapter(adapter);
     }
 
+    // metodo para guardar una instantanea de los valores del sensor
     private final View.OnClickListener saveHandler = (_v) -> {
         String str = "SNAPSHOT -> " + x + ", " + y + ", " + z + ", " + p;
         list.add(str);
@@ -72,6 +79,8 @@ public class SensorsActivity extends AppCompatActivity implements SensorEventLis
         editor.apply();
     };
 
+    // lee y sincroniza los eventos de los sensores
+    // muestra los valores de los sensores en pantalla
     @Override
     public void onSensorChanged(SensorEvent event) {
         String txt = "";

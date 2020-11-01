@@ -45,18 +45,24 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
 
         manager = (SensorManager) getSystemService(SENSOR_SERVICE);
 
+        // formato para numero con punto flotante
         format = new DecimalFormat("#.##");
+
+        // levanto el objeto de preferencias y leo el indice
         preferences = getSharedPreferences("sensors", MODE_PRIVATE);
         index = preferences.getInt(Constants.INDEX_PREFERENCE, 0);
 
+        // leo las medidas de la pantalla para que el GameView sepa donde dibujarse
         DisplayMetrics displayMetrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
         int height = displayMetrics.heightPixels;
         int width = displayMetrics.widthPixels;
 
+        // creo el GameView pasandole las medidas de pantalla
         gameView = new GameView(GameActivity.this, width, height);
         setContentView(gameView);
 
+        // configuro el recibidor de eventos IntenService
         configureReceiver();
     }
 
@@ -69,6 +75,7 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
             e.printStackTrace();
         }
 
+        // envia un evento al servidor de la catedra
         Intent intent = new Intent(GameActivity.this, UnlamService.class);
         intent.putExtra("uri", Constants.EVENT_URI);
         intent.putExtra("action", UnlamService.ACTION_EVENT);
@@ -76,6 +83,7 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
         intent.putExtra("method", "POST");
         startService(intent);
 
+        // guarda un evento en las shared preferences
         if(!event.toString().equals("STARTING")) {
             String str = event.toString() + " -> " + x + ", " + y + ", " + z + ", " + p;
             index++;
@@ -95,6 +103,7 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
             e.printStackTrace();
         }
 
+        // envia el ranking al servidor propio
         Intent intent = new Intent(GameActivity.this, UnlamService.class);
         intent.putExtra("uri", Constants.RANKING_SET_URI);
         intent.putExtra("action", UnlamService.ACTION_EVENT);
@@ -103,6 +112,9 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
         startService(intent);
     }
 
+    // lee y sincroniza los eventos de los sensores
+    // el acelerometro mueve la pelotita azul
+    // el sensor de proximidad pone "pausa-ayuda"
     public void onSensorChanged(SensorEvent event) {
         synchronized (this) {
             switch (event.sensor.getType()){
@@ -122,13 +134,6 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
 
     @Override
     public void onAccuracyChanged(Sensor sensor, int i) {
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        stopSensors();
-        unregisterReceiver(callback);
     }
 
     @Override

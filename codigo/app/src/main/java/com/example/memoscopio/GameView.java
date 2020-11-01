@@ -13,9 +13,12 @@ import java.util.ArrayList;
 @SuppressLint("ViewConstructor")
 public class GameView extends View {
 
+    // diametro de la pelotita azul
     private static final int DIAMETER = 50;
+    // cantidad de pelitas amarillas
     private static final int AMOUNT = 10;
 
+    // estados del juego
     public enum State {
         STARTING,
         PLAYING,
@@ -25,7 +28,9 @@ public class GameView extends View {
 
     private State state;
 
+    // pelotita azul
     private final Bubble bubble;
+    // pelotitas amarillas
     private final ArrayList<Memo> memos = new ArrayList<>();
 
     private final GameActivity context;
@@ -44,15 +49,19 @@ public class GameView extends View {
         super(context);
         this.context = context;
 
+        // calcula el centro de la pantalla
         int x = (width - DIAMETER)/2;
         int y = (height/2) - DIAMETER;
 
+        // inicializa la pelotita azul
         bubble = new Bubble(x, y, width, height, DIAMETER);
 
+        //inicializa las pelotitas amarillas
         for(int i=0; i<AMOUNT; i++){
             memos.add( new Memo(x, y) );
         }
 
+        // inicializa los mesajes que apareceran en pantalla
         paintMessage = new Paint();
         paintCountdown = new Paint();
         paintMessage.setTextSize(40);
@@ -63,14 +72,17 @@ public class GameView extends View {
 
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
+
+        // dibuja la pelotita azul
         bubble.draw(canvas);
 
+        // esconde las pelotitas amarillas solo si el estado es PLAYING
         boolean show = state != State.PLAYING;
-
         for( Memo memo : memos ){
             memo.draw(canvas, show);
         }
 
+        // dibuja los mensajes de texto en pantalla
         canvas.drawText(countdown, 20, 170, paintCountdown);
         canvas.drawText(message1, 20, 100, paintMessage);
         canvas.drawText(message2, 20, 180, paintMessage);
@@ -78,6 +90,7 @@ public class GameView extends View {
     }
 
 
+    // mueve la pelotita azul y chequea si se encontraron todas las amarillas
     protected void move(float f, float g) {
         if(state == State.PLAYING) {
             this.check();
@@ -99,6 +112,8 @@ public class GameView extends View {
         }
     }
 
+    // chequea si se encontraron todas las pelotitas amarillas
+    // termina el juego en caso positivo
     private void check(){
         Rect rect = bubble.getBounds();
 
@@ -113,6 +128,7 @@ public class GameView extends View {
         }
     }
 
+    // comienza el juego, delay de 6 segundos para memorizar
     private void start(){
         setState(State.STARTING);
 
@@ -128,6 +144,9 @@ public class GameView extends View {
         }.start();
     }
 
+    // finaliza el juego, muestra el tiempo, la penalidad
+    // envia los datos al servidor propio
+    // vuelve al menu luego de 5 segundos
     @SuppressLint("DefaultLocale")
     private void finish(){
         if(state == State.FINISHED) return;
@@ -155,6 +174,8 @@ public class GameView extends View {
         }.start();
     }
 
+    // metodo para cambiar el estado
+    // tambien lo envía al servidor de la catedra
     private void setState(State newState){
         this.state = newState;
         context.sendEvent(newState);

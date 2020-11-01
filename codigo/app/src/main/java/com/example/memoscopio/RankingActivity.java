@@ -32,6 +32,7 @@ public class RankingActivity extends AppCompatActivity {
 
         configureReceiver();
 
+        // envia el pedido al servidor propio para obtener la lista de tiempos
         Intent intent = new Intent(RankingActivity.this, UnlamService.class);
         intent.putExtra("uri", Constants.RANKING_GET_URI);
         intent.putExtra("action", UnlamService.ACTION_RANKING_GET);
@@ -46,6 +47,7 @@ public class RankingActivity extends AppCompatActivity {
         registerReceiver(callback, filter);
     }
 
+    // lee el ranking del servidor y lo muestra en pantalla
     public class Callback extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -60,7 +62,6 @@ public class RankingActivity extends AppCompatActivity {
                     Log.i("LOGUEO RANKING", "Datos: " + data );
 
                     JSONArray ranking = json.getJSONArray("ranking");
-
                     for (int i = 0; i < ranking.length(); i++) {
                         JSONObject row = ranking.getJSONObject(i);
                         String person = "" + (i+1) + ") " + row.getString("points") + " - " + row.getString("name");

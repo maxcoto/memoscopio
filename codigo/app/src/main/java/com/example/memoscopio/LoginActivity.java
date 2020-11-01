@@ -48,6 +48,8 @@ public class LoginActivity extends AppCompatActivity {
         finish();
     };
 
+    // envia los datos al servidor solo si hay internet
+    // y si los datos del usuario son validos
     private final View.OnClickListener loginHandler = (_v) -> {
         User user = new User(getValue(emailInput), getValue(passwordInput));
 
@@ -67,27 +69,24 @@ public class LoginActivity extends AppCompatActivity {
         }
     };
 
+    // registra el receptor de IntentService como callback
     private void configureReceiver(){
         filter = new IntentFilter(UnlamService.ACTION_LOGIN);
         filter.addCategory(Intent.CATEGORY_DEFAULT);
         registerReceiver(callback, filter);
     }
 
-    @Override
-    protected void onPause() {
-        super.onPause();
-        unregisterReceiver(callback);
-    }
-
+    // recibe la respuesta del servidor
+    // en caso de exito asigna el token y refresh del usuario y pone en ejecucion el refresh token
+    // luego procede a la vista del menu
+    // en caso de error muestra el mensaje en pantalla
     public class Callback extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
             try {
                 String data = intent.getStringExtra("data");
                 JSONObject json = new JSONObject(data);
-
                 Log.i("LOGUEO LOGIN", "Datos: " + data );
-
                 String success = json.getString("success");
 
                 if(success.equals("true")){
@@ -96,7 +95,6 @@ public class LoginActivity extends AppCompatActivity {
                     error("Logueado correctamente");
 
                     new RefreshToken().execute();
-
                     Intent i = new Intent(context, MenuActivity.class);
                     startActivity(i);
                     finish();

@@ -28,6 +28,7 @@ public class User {
         this.password = password;
     }
 
+    // devuelve un JSON-String basado en los datos de inicializacion, para el registro
     protected String registerData(){
         JSONObject user = new JSONObject();
         try {
@@ -44,6 +45,7 @@ public class User {
         return user.toString();
     }
 
+    // devuelve un JSON-String basado en los datos de inicializacion, para el login
     protected String loginData(){
         JSONObject user = new JSONObject();
         try {
@@ -56,6 +58,7 @@ public class User {
         return user.toString();
     }
 
+    // valida los datos para el registro
     protected String validateRegister(){
         if (name.length() == 0) {
             return("El nombre no puede estar en blanco");
@@ -88,6 +91,7 @@ public class User {
         return "ok";
     }
 
+    // valida los datos para el login
     protected String validateLogin(){
         if (User.email.length() == 0) {
             return("El email no puede estar en blanco");

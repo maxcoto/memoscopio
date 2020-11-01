@@ -19,16 +19,18 @@ public class BatteryActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_battery);
 
+        // calcula el estado de la bateria
         IntentFilter ifilter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
         Intent batteryStatus = this.registerReceiver(null, ifilter);
-
         int level = batteryStatus.getIntExtra(BatteryManager.EXTRA_LEVEL, -1);
         int scale = batteryStatus.getIntExtra(BatteryManager.EXTRA_SCALE, -1);
         int batteryPct = (int) (level * 100 / (float) scale);
 
+        // muestra el porcentaje en pantalla
         TextView batteryLabel = findViewById(R.id.batteryLabel);
         batteryLabel.setText(batteryPct + "%");
 
+        // luego de 4 segundo cambia de Activity
         new CountDownTimer(4000, 1000) {
             public void onTick(long millisUntilFinished) {}
             public void onFinish() {

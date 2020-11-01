@@ -29,6 +29,8 @@ public class UnlamService extends IntentService {
         super("UnlamService");
     }
 
+    // ejecuta en otro hilo separado del principal el pedido al servidor
+    // la uri, la accion, los datos y el metodo vienen como parametros extra.
     @Override
     protected void onHandleIntent(Intent intent) {
         try {
@@ -47,6 +49,8 @@ public class UnlamService extends IntentService {
         }
     }
 
+    // ejecuta el request y manda un mensaje de broadcast a quien lo inicio
+    // usando para ello el parametro extra "action"
     protected void executeRequest(String uri, String action, String data, String method){
         String result = REQUEST(uri, data, method);
 
@@ -65,6 +69,8 @@ public class UnlamService extends IntentService {
         sendBroadcast(i);
     }
 
+    // metodo para hacer un pedido al servidor
+    // como recibe el method por parametro puede ser de cualquier tipo "POST", "PUT", "GET", "PATCH"
     private String REQUEST (String uri, String data, String method){
         HttpURLConnection connection;
         String result;
